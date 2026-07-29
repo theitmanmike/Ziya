@@ -117,6 +117,22 @@ kullanıcı `/`'ye gidince otomatik `/dashboard`'a yönleniyor, login/signup do�
 - [x] Giriş yapmış kullanıcı `/`'ye geldiğinde `/dashboard`'a yönleniyor (`redirect()`, `getCurrentUser()` ile), showcase yalnızca ziyaretçiler için
 - [x] Olay akışı `/dashboard`'a taşındı; header'daki "Olay Akışı" linki güncellendi; login/signup sonrası yönlendirme de `/dashboard`'a düzeltildi
 
+## Faz 7 — Profesyonel Admin & Müşteri Paneli (kullanıcı talebi 2026-07-29)
+
+Kullanıcı, mevcut admin panelinin (yalnızca rumor durumu ekleme) yetersiz olduğunu,
+sistemi **gerçekten yöneten** bir admin paneli istediğini belirtti: akış ayarları,
+API adresleri, haber kanalları, müşteriler, paketler. Ayrıca müşteri girişinde de
+benzer kalitede bir panel istendi.
+
+- [ ] Ortak admin layout (`/admin/layout.tsx`) — auth+rol kontrolü tek yerde, sol nav (Genel Bakış/Kaynaklar/Müşteriler/Paketler/Entegrasyonlar)
+- [ ] **Kaynaklar (haber kanalları)** — `/admin/sources`: ekle/düzenle/sil, `trust_score` yönetimi. Bu tablo zaten `compute_source_accuracy` ve gürültü filtresinin girdisi — gerçek etkisi var.
+- [ ] **Müşteriler** — `/admin/customers`: tüm `profiles` listesi (RLS zaten `is_admin()` ile admin'e tüm satırları açıyor), rol (member/admin) ve paket seviyesi (free/pro/kurumsal) değiştirme.
+- [ ] **Paketler** — `/admin/pricing`: `pricing_tiers` + `pricing_tier_features` tabloları (yeni migration), admin'den düzenlenebilir. `/pricing` sayfası artık DB'den okuyor (statik dizi değil).
+- [ ] **Entegrasyon Durumu** — `/admin/integrations`: hangi API anahtarlarının (OpenAI/Finnhub/Alpha Vantage/NewsAPI/GNews/Guardian/Marketaux/Currents) ortamda tanımlı olduğunu gösteren **salt okunur** durum sayfası.
+- [ ] **"API adresleri" — bilinçli olarak sınırlı tutuldu.** Gerçek API anahtarları asla veritabanına/admin panelinden düzenlenebilir bir alana taşınmamalı (env var'lar zaten doğru yer — sızıntı riski). Admin panelinde sadece _durum_ gösteriliyor, anahtarların kendisi değil. Anahtarları değiştirmek isteyen kullanıcı `.env.local` + Vercel env değişkenlerini güncellemeli.
+- [ ] **"Akış ayarları" — kapsamı netleştirilmedi.** Şu an gerçek bir ingestion pipeline (Faz 5) olmadığı için "akış ayarı" (örn. sayfa başına olay sayısı, otomatik güncelleme sıklığı) gibi ayarların gerçek bir karşılığı yok — spekülatif bir ayarlar sayfası kurmak yerine, Faz 5'in ilk gerçek entegrasyonu yazılınca birlikte ele alınacak.
+- [ ] **Müşteri Paneli** — `/account`: profil bilgisi (e-posta, kayıt tarihi), paket seviyesi rozeti, ad-soyad düzenleme (kendi profilini güncelleyen tek self-service alan — `role`/`subscription_tier` kasıtlı olarak kullanıcıya kapalı, yalnızca admin değiştirebilir).
+
 ## Sürekli / Yatay Konular
 
 - [x] Kimlik doğrulama (Supabase Auth — e-posta + OAuth) — bkz. Faz 6, e-posta/şifre tamamlandı; OAuth (Google vb.) henüz yok
