@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { AuthNav } from "@/components/AuthNav";
+import { Logo } from "@/components/Logo";
 import { getCurrentUser } from "@/lib/auth";
 
 const geistSans = Geist({
@@ -39,9 +40,9 @@ export default async function RootLayout({
         </a>
         <header className="border-b border-border">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-            <Link href="/" className="flex items-baseline gap-2">
-              <span className="text-lg font-semibold tracking-tight">Ziya</span>
-              <span className="hidden text-sm text-muted sm:inline">
+            <Link href="/" className="flex items-center gap-3">
+              <Logo />
+              <span className="hidden text-sm text-muted md:inline">
                 Olay Odaklı Hisse Senedi Etki Tahmin Ajanı
               </span>
             </Link>
