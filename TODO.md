@@ -130,8 +130,26 @@ benzer kalitede bir panel istendi.
 - [x] **Paketler** — `/admin/pricing`: `pricing_tiers` + `pricing_tier_features` tabloları (`0007_pricing_tiers.sql`), admin'den düzenlenebilir. `/pricing` sayfası artık DB'den okuyor (statik dizi değil) — canlıda doğrulandı.
 - [x] **Entegrasyon Durumu** — `/admin/integrations`: 8 API anahtarının ortamda tanımlı olup olmadığını gösteren **salt okunur** durum sayfası — canlıda doğrulandı (hepsi "Yapılandırılmış").
 - [x] **Müşteri Paneli** — `/account`: profil bilgisi (e-posta, kayıt tarihi), paket seviyesi rozeti, ad-soyad düzenleme (kendi profilini güncelleyen tek self-service alan — `role`/`subscription_tier` kasıtlı olarak kullanıcıya kapalı, yalnızca admin değiştirebilir). Canlıda doğrulandı.
-- [x] **"API adresleri" konusu netleşti:** Gerçek API anahtarları asla veritabanına/admin panelinden düzenlenebilir bir alana taşınmadı (env var'lar doğru yer — sızıntı riski). Admin panelinde sadece _durum_ gösteriliyor.
-- [~] **"Akış ayarları" / gerçek haber çekme** — kullanıcı bunu ayrıca netleştirdi: sistem gerçekten haber çekmeli. Bkz. aşağıdaki **Faz 7.1 — Gerçek Haber Çekme (Ingestion)** bölümü.
+- [x] **"API adresleri" konusu:** İlk kararımız (anahtarları yalnızca env var'da tutmak) kullanıcı tarafından açıkça geri çevrildi — "Tüm bu apileri oradan ayarlayabilmek istiyorum" talebiyle. Karar tersine döndü: bkz. aşağıdaki **Faz 7.1** içindeki "Ayarlar sayfası" maddesi.
+- [x] **"Akış ayarları" / gerçek haber çekme** — sistem artık gerçekten haber çekiyor. Bkz. aşağıdaki **Faz 7.1 — Gerçek Haber Çekme (Ingestion)** bölümü.
+
+## Faz 7.1 — Gerçek Haber Çekme (Ingestion) (kullanıcı talebi 2026-07-29)
+
+Kullanıcı iki ayrı ama bağlantılı talep iletti: (1) sistemin gerçekten yeni haber
+çekmesi, (2) tüm API anahtarlarının admin panelinden, veritabanına yazılarak
+yönetilebilmesi. İkinci talep, "anahtarlar env var'da kalmalı" kararımızı
+doğrudan tersine çevirdi — anahtarlar artık `pgcrypto` ile şifreli olarak
+veritabanında saklanabiliyor.
+
+- [x] **Migration `0009_api_credentials.sql`** — `api_credentials` tablosu (yalnızca şifreli `bytea` değer), `set_api_credential`/`get_api_credential` `SECURITY DEFINER` fonksiyonları (`pgp_sym_encrypt`/`pgp_sym_decrypt`, passphrase `SECRETS_ENCRYPTION_KEY` ortam değişkeninde — asla DB'de değil). `anon`/`authenticated`'den `execute` yetkisi `revoke` edildi. Uzak veritabanına uygulandı ve doğrulandı.
+- [x] **`src/lib/secrets.ts`** — `setApiCredential`/`getApiCredential`/`resolveApiKey` (DB → yoksa env fallback) / `listConfiguredCredentialKeys`. Tüm dış API çağrıları anahtarlarını `resolveApiKey()` üzerinden almalı.
+- [x] **`src/lib/ingestion/finnhub.ts`** artık `resolveApiKey("FINNHUB_API_KEY")` kullanıyor — env yerine önce DB'ye bakıyor.
+- [x] **Admin: `/admin/settings`** — 8 API anahtarı için yaz-sadece form (OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents). Kaydedilen değer bir daha düz metin olarak gösterilmez; her satır DB'de kayıtlı mı yoksa `.env`'den mi aktif olduğunu gösterir. **Canlıda doğrulandı:** Finnhub anahtarı panelden kaydedildi, "Veritabanında kayıtlı" rozeti ve doğru zaman damgasıyla göründü.
+- [x] **Finnhub haber çekme motoru** (`runFinnhubIngestion`) — `assets` tablosundaki her ticker için `company-news` çeker, `external_url` unique kısıtıyla tekrar eden makaleleri atlar, kaynağı otomatik oluşturur (güven skoru 55), `ingestion_runs`'a loglar.
+- [x] **Admin: `/admin/ingestion`** — izlenen hisseler, "Şimdi Çek" manuel tetikleyici, çalıştırma geçmişi tablosu.
+- [x] **Vercel Cron** — `vercel.json`'da `/api/cron/ingest-news`, günlük 06:00 UTC (Hobby plan sınırı: günde 1). Route, `Authorization: Bearer $CRON_SECRET` doğrular. **Doğrulandı:** doğru secret ile 200 + gerçek sonuç, yanlış secret ile 401.
+- [x] **Uçtan uca canlı test (2026-07-29):** Panelden "Şimdi Çek" tetiklendi → DB'de gerçek `ingestion_runs` kaydı (`30 görülen / 29 oluşturulan`, durum `success`) → dashboard'da gerçek, güncel haberler göründü (NVDA/AMD/AAPL/TSLA, Yahoo kaynaklı, doğru göreli zaman damgalı). DB'ye kaydedilmiş Finnhub anahtarının gerçekten kullanıldığı, env değişkenini geçersiz kılarak doğrulandı.
+- [x] `SECRETS_ENCRYPTION_KEY` Vercel'in üç ortamına da (`production`/`preview`/`development`) eklendi.
 
 ## Sürekli / Yatay Konular
 
@@ -145,19 +163,19 @@ benzer kalitede bir panel istendi.
 - [x] Yasal/uyumluluk metinleri: `/terms` ve `/privacy` sayfaları (Proje Dosyası Bölüm 10'a dayalı), footer'da linkli
 - [ ] Çoklu dil desteği (TR/EN) — opsiyonel
 - [x] Olay kartlarında canlı göreli süre ("5 dk önce") — `RelativeTime` bileşeni, 30 saniyede bir kendini güncelliyor, dashboard ve olay detay sayfasında
-- [x] Ek ücretsiz haber API anahtarları alındı ve `.env.local`/Vercel'e eklendi: GNews, The Guardian, Marketaux, Currents — **henüz hiçbiri kodda kullanılmıyor**, sadece yapılandırıldı (Faz 5'in haber akışı entegrasyonu adımını bekliyor)
+- [x] Ek ücretsiz haber API anahtarları alındı ve `.env.local`/Vercel'e eklendi: GNews, The Guardian, Marketaux, Currents — **henüz kodda kullanılmıyor** (yalnızca Finnhub'ın haber çekme entegrasyonu yazıldı, bkz. Faz 7.1); diğerleri Faz 5'in geri kalanını bekliyor
 
 ---
 
 ## Şu An Neredeyiz?
 
-**Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) büyük ölçüde tamamlandı** ve canlıda uçtan uca doğrulandı. **Showcase/landing sayfası tamamlandı** ve doğrulandı. **Marka/logo** tasarlandı (bkz. aşağıdaki "Marka Kimliği" notu). **Faz 3 ve Faz 5'in çoğu** hâlâ başlanmadı (⛔ dış servisler).
+**Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) tamamlandı** ve canlıda uçtan uca doğrulandı. **Faz 7 ve Faz 7.1 (profesyonel admin paneli + gerçek haber çekme + admin'den yönetilebilir şifreli API anahtarları) tamamlandı** ve canlıda uçtan uca doğrulandı. **Showcase/landing sayfası tamamlandı** ve doğrulandı. **Marka/logo** tasarlandı (bkz. aşağıdaki "Marka Kimliği" notu). **Faz 3 ve Faz 5'in embedding/benzer-olay-arama kısmı** hâlâ bekliyor (⛔ OpenAI billing).
 
-**API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı ve `.env.local` + Vercel'e eklendi. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Diğer 7 anahtar henüz hiçbir kodda kullanılmıyor — sadece yapılandırıldı.
+**API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı; hem `.env.local`/Vercel'de hem de admin panelinden (`/admin/settings`) veritabanına şifreli olarak kaydedilebiliyor (`resolveApiKey()` önce DB'ye bakar, yoksa env'e düşer). Finnhub gerçek haber çekmede aktif olarak kullanılıyor. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Diğer 6 anahtar (Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents) henüz hiçbir kodda kullanılmıyor — yalnızca yapılandırıldı ve panelden düzenlenebilir durumda.
 
-**Tek blokaj:** OpenAI billing — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek. (GitHub `workflow` scope onaylandı, push'lar artık sorunsuz.)
+**Tek blokaj:** OpenAI billing — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek.
 
-**Sıradaki en anlamlı iş:** README.md tamamlandıktan sonra — Faz 3 (KAP/BIST) ya da Faz 5 (gerçek veri) arasında kullanıcıya sorulmalı, ya da OpenAI billing eklenirse embedding/benzer olay araması tamamlanabilir.
+**Sıradaki en anlamlı iş:** Faz 3 (KAP/BIST) ya da Faz 5'in geri kalan haber kaynaklarının (GNews/Guardian/Marketaux/Currents) ingestion'a eklenmesi arasında kullanıcıya sorulmalı, ya da OpenAI billing eklenirse embedding/benzer olay araması tamamlanabilir.
 
 ---
 

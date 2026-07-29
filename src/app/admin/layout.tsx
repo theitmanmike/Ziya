@@ -4,9 +4,11 @@ import { getCurrentUser } from "@/lib/auth";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Genel Bakış" },
+  { href: "/admin/ingestion", label: "Haber Çekme" },
   { href: "/admin/sources", label: "Kaynaklar" },
   { href: "/admin/customers", label: "Müşteriler" },
   { href: "/admin/pricing", label: "Paketler" },
+  { href: "/admin/settings", label: "Ayarlar" },
   { href: "/admin/integrations", label: "Entegrasyonlar" },
 ];
 

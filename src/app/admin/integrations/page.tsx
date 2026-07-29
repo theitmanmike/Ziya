@@ -50,9 +50,13 @@ export default function AdminIntegrationsPage() {
     <div>
       <h2 className="text-lg font-semibold">Entegrasyon Durumu</h2>
       <p className="mt-1 text-sm text-muted">
-        Salt okunur — hangi API anahtarlarının ortamda tanımlı olduğunu gösterir. Anahtarların
-        kendisini değiştirmek için <code>.env.local</code> ve Vercel ortam değişkenlerini
-        güncelleyin; güvenlik nedeniyle anahtarlar burada görüntülenmez veya düzenlenmez.
+        Salt okunur — hangi API anahtarlarının ortam değişkeni (<code>.env</code> / Vercel)
+        üzerinden tanımlı olduğunu gösterir. Anahtarları veritabanında şifreli olarak kaydedip ortam
+        değişkeninin önüne geçirmek için{" "}
+        <a href="/admin/settings" className="text-brand hover:underline">
+          Ayarlar
+        </a>{" "}
+        sayfasını kullanın.
       </p>
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-border">

@@ -98,6 +98,18 @@ export interface RumorTracking {
   updated_at: string;
 }
 
+export interface IngestionRun {
+  id: string;
+  connector: string;
+  trigger: "manual" | "cron";
+  started_at: string;
+  finished_at: string | null;
+  status: "running" | "success" | "error";
+  events_created: number;
+  articles_seen: number;
+  error_message: string | null;
+}
+
 export interface PricingTier {
   id: string;
   name: string;
