@@ -49,12 +49,14 @@ için [TODO.md](TODO.md) dosyasına bakın.
 
 ## Komutlar
 
-| Komut | Açıklama |
-|---|---|
-| `npm run dev` | Geliştirme sunucusu (Turbopack) |
-| `npm run build` | Prodüksiyon derlemesi |
-| `npm run start` | Prodüksiyon sunucusu |
-| `npm run lint` | ESLint kontrolü |
+| Komut                  | Açıklama                         |
+| ---------------------- | -------------------------------- |
+| `npm run dev`          | Geliştirme sunucusu (Turbopack)  |
+| `npm run build`        | Prodüksiyon derlemesi            |
+| `npm run start`        | Prodüksiyon sunucusu             |
+| `npm run lint`         | ESLint kontrolü                  |
+| `npm run format`       | Prettier ile kodu formatla       |
+| `npm run format:check` | Formatı değiştirmeden kontrol et |
 
 ## Proje Yapısı
 

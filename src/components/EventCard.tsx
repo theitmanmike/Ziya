@@ -7,12 +7,14 @@ import { formatDateTime } from "@/lib/format";
 import type { EventWithRelations } from "@/lib/supabase/types";
 
 export function EventCard({ event }: { event: EventWithRelations }) {
-  const primaryAsset = event.assets.find((a) => a.relation === "birincil")?.asset ?? event.assets[0]?.asset;
+  const primaryAsset =
+    event.assets.find((a) => a.relation === "birincil")?.asset ?? event.assets[0]?.asset;
   const latestContext = [...event.market_context]
     .filter((mc) => mc.asset_id === primaryAsset?.id)
     .sort((a, b) => a.offset_label.localeCompare(b.offset_label))
     .at(-1);
-  const primaryPrediction = event.predictions.find((p) => p.asset_id === primaryAsset?.id) ?? event.predictions[0];
+  const primaryPrediction =
+    event.predictions.find((p) => p.asset_id === primaryAsset?.id) ?? event.predictions[0];
 
   return (
     <Link
@@ -32,9 +34,7 @@ export function EventCard({ event }: { event: EventWithRelations }) {
       </div>
 
       <h3 className="mt-3 text-base font-semibold leading-snug sm:text-lg">{event.headline}</h3>
-      {event.summary && (
-        <p className="mt-1.5 line-clamp-2 text-sm text-muted">{event.summary}</p>
-      )}
+      {event.summary && <p className="mt-1.5 line-clamp-2 text-sm text-muted">{event.summary}</p>}
 
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <TrustBadge name={event.source.name} trustScore={event.source.trust_score} />

@@ -29,13 +29,17 @@ export function MarketContextTable({
         <tbody className="divide-y divide-border">
           {sorted.map((row) => (
             <tr key={row.id}>
-              <td className="px-3 py-2 font-medium">{OFFSET_LABELS[row.offset_label] ?? row.offset_label}</td>
+              <td className="px-3 py-2 font-medium">
+                {OFFSET_LABELS[row.offset_label] ?? row.offset_label}
+              </td>
               <td className="px-3 py-2 tabular-nums">{formatPrice(row.price, currency)}</td>
               <td className="px-3 py-2">
                 <ChangeValue value={row.change_pct} />
               </td>
               <td className="px-3 py-2 text-muted">
-                {row.volume_state ? VOLUME_STATE_LABELS[row.volume_state] ?? row.volume_state : "—"}
+                {row.volume_state
+                  ? (VOLUME_STATE_LABELS[row.volume_state] ?? row.volume_state)
+                  : "—"}
               </td>
             </tr>
           ))}

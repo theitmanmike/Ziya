@@ -4,18 +4,18 @@
 
 **Teknoloji yığını kararı:**
 
-| Katman | Seçim | Gerekçe |
-|---|---|---|
-| Frontend/Framework | Next.js 16 (App Router, TypeScript, Turbopack) | Vercel ile birebir entegre, SSR + API routes tek repoda |
-| Stil / UI | Tailwind CSS v4 (elle yazılmış bileşenler) | shadcn/ui kurulumu non-interaktif ortamda risk taşıdığı için elle, Tailwind üzerine yazılan sade bileşenlerle ilerlendi — bkz. Faz 0 notu |
-| Veritabanı | Supabase (Postgres + `pgvector`) | Event Memory'nin vektörel arama ihtiyacını tek serviste karşılar |
-| Auth | Supabase Auth | Kurumsal/bireysel kullanıcı ayrımı için hazır altyapı |
-| Hosting | Vercel | Zaten proje bağlı (`cicibyte/ziya`) |
-| Repo | GitHub (`Ziya`) | Zaten bağlı |
-| Embedding | OpenAI `text-embedding-3-small` (veya eşdeğeri) | ⛔ API anahtarı gerektirir — kullanıcı sağlayacak |
-| Piyasa verisi | Alpha Vantage / Finnhub (ücretsiz kademe ile başla) | ⛔ API anahtarı gerektirir |
-| Haber verisi | NewsAPI / RSS (MVP) → Bloomberg/Reuters (ileri faz) | ⛔ Ücretli kaynaklar için lisans gerekir |
-| KAP entegrasyonu | KAP açık veri servisi | ⛔ Faz 3'te ele alınacak |
+| Katman             | Seçim                                               | Gerekçe                                                                                                                                   |
+| ------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend/Framework | Next.js 16 (App Router, TypeScript, Turbopack)      | Vercel ile birebir entegre, SSR + API routes tek repoda                                                                                   |
+| Stil / UI          | Tailwind CSS v4 (elle yazılmış bileşenler)          | shadcn/ui kurulumu non-interaktif ortamda risk taşıdığı için elle, Tailwind üzerine yazılan sade bileşenlerle ilerlendi — bkz. Faz 0 notu |
+| Veritabanı         | Supabase (Postgres + `pgvector`)                    | Event Memory'nin vektörel arama ihtiyacını tek serviste karşılar                                                                          |
+| Auth               | Supabase Auth                                       | Kurumsal/bireysel kullanıcı ayrımı için hazır altyapı                                                                                     |
+| Hosting            | Vercel                                              | Zaten proje bağlı (`cicibyte/ziya`)                                                                                                       |
+| Repo               | GitHub (`Ziya`)                                     | Zaten bağlı                                                                                                                               |
+| Embedding          | OpenAI `text-embedding-3-small` (veya eşdeğeri)     | ⛔ API anahtarı gerektirir — kullanıcı sağlayacak                                                                                         |
+| Piyasa verisi      | Alpha Vantage / Finnhub (ücretsiz kademe ile başla) | ⛔ API anahtarı gerektirir                                                                                                                |
+| Haber verisi       | NewsAPI / RSS (MVP) → Bloomberg/Reuters (ileri faz) | ⛔ Ücretli kaynaklar için lisans gerekir                                                                                                  |
+| KAP entegrasyonu   | KAP açık veri servisi                               | ⛔ Faz 3'te ele alınacak                                                                                                                  |
 
 ---
 
@@ -25,7 +25,7 @@
 - [x] Next.js + TypeScript + Tailwind proje iskeletini oluştur
 - [x] ~~shadcn/ui bileşen kütüphanesini kur~~ — **karardan vazgeçildi.** Non-interaktif ortamda CLI kurulumu risk taşıdığından, `src/components/` altında Tailwind ile elle yazılmış sade bileşenler (Badge, TrustBadge, StatusBadge, ChangeValue, EventCard, PredictionSummary, MarketContextTable, RumorTimeline) kullanıldı.
 - [x] ESLint yapılandırması (create-next-app varsayılanı, `npx eslint .` temiz geçiyor)
-- [ ] Prettier kurulumu — **yapılmadı**, henüz proje genelinde format standardı yok
+- [x] Prettier kurulumu (`.prettierrc.json`, `npm run format` / `format:check`, tüm kod tabanına uygulandı)
 - [x] `tsconfig` strict mod (scaffold varsayılanı, `strict: true`)
 - [x] `.env.example` dosyasını oluştur (Supabase URL/anon key/service key, embedding API key placeholder'ları)
 - [x] Supabase projesini yerel `lib/supabase` client'larıyla (browser + server + admin) bağla
@@ -45,11 +45,11 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 - [x] Ana Dashboard sayfası: olay akışı (event feed) — kart bazlı, güven skoru rozetli, kategori etiketli
 - [ ] Olay Detay sayfası — piyasa bağlamı matrisi ve tahmin aralığı **var**; "benzer olay listesi" kısmı **yok**, şu an sadece bir bilgi notu gösteriyor (embedding üretilmediği için `match_events` fonksiyonu hiç çağrılmıyor)
 - [x] Söylenti (Rumor) durum rozetleri: `Rumor` / `Unverified` / `Confirmed` / `False` renk kodlaması
-- [ ] "Benzer olay ortalaması" tahmin fonksiyonu — **yapılmadı.** `predictions` tablosundaki değerler şu an sabit seed verisi; hiçbir kod bunları hesaplamıyor. Gerçek bir "motor" değil, statik gösterim.
-- [x] Responsive tasarım (Tailwind `sm:` breakpoint'leri ile) — mobil görünüm tarayıcıda görsel olarak test edilmedi, sadece kod seviyesinde uygulandı
+- [x] "Benzer olay ortalaması" tahmin fonksiyonu — `compute_category_prediction` (Postgres, `0003_prediction_engine.sql`) + `src/lib/predictions.ts`. Kategori eşleşmesiyle gerçekten hesaplıyor (embedding yok, vektörel değil); örnek sayısı 2'nin altındaysa uydurma aralık yerine "yeterli veri yok" gösteriyor. Olay detay sayfasında canlı RPC çağrısıyla doğrulandı (Tesla/NOVA/XHOLD: 0 örnek, Apple: Nvidia'dan 1 örnek — ikisi de doğru şekilde "yetersiz" işaretleniyor).
+- [x] Responsive tasarım (Tailwind `sm:` breakpoint'leri ile) — 375px mobil viewport'ta tarayıcıda test edildi, konsol hatası yok
 - [x] Boş durum ekranı ("Henüz kayıtlı olay yok...")
 - [x] Hata/kurulum eksik durumu ekranı (env değişkeni veya DB bağlantı hatası için)
-- [ ] Yükleme durumu ekranı (`loading.tsx`) — **yapılmadı**
+- [x] Yükleme durumu ekranı (`src/app/loading.tsx`, `src/app/events/[code]/loading.tsx` — iskelet/skeleton UI)
 - [x] Yasal uyarı bileşeni: layout footer'ında ve her sayfada "yatırım tavsiyesi değildir" ibaresi
 
 ## Faz 2 — Söylenti Motoru (Rumor Engine)
@@ -100,17 +100,19 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 ## Şu An Neredeyiz?
 
-**Faz 0 tamamlandı** (Prettier hariç — bkz. yukarı). **Faz 1'in çoğu tamamlandı**; kalan gerçek boşluk: benzer olay araması UI'da pasif (embedding yok) ve tahminler statik seed veri, hesaplayan bir kod yok. **Faz 2**'den yalnızca UI kısmı (zaman çizelgesi) var, motor mantığı (durum makinesi, doğruluk hesaplama, gürültü filtresi) yok. **Faz 3/4/5** büyük ölçüde başlanmadı; Faz 4'te sadece görselleştirme var, hesaplama yok.
+**Faz 0 tamamlandı.** **Faz 1 tamamlandı** — tahmin hesaplaması artık gerçek kod (kategori eşleşmesi, `compute_category_prediction`), yükleme/boş/hata durumları var, mobilde test edildi. Kalan tek gerçek boşluk: benzer olay araması hâlâ vektörel değil, kategori bazlı (embedding Faz 5'i bekliyor) — bu bilinçli bir ara adım, olay detay sayfasında açıkça etiketleniyor.
 
-**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı.
+**Faz 2**'den yalnızca UI kısmı (zaman çizelgesi) var; motor mantığı (durum makinesi, kaynak doğruluk hesaplama, gürültü filtresi) hâlâ yok. **Faz 3/4/5** büyük ölçüde başlanmadı; Faz 4'te sadece statik görselleştirme var, hesaplama yok.
 
-**Sıradaki en anlamlı iş:** Faz 1'i gerçekten bitirmek —
-1. `loading.tsx` ekle
-2. Tahmin hesaplama fonksiyonunu gerçek koda dönüştür (şu an tamamen statik)
-3. Prettier kurulumu
-4. Mobil görünümü tarayıcıda gerçekten test et
+**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `compute_category_prediction` migration'ı uygulandı.
 
-— Faz 2/4'ün "motor" kısımlarına (hesaplama, durum makinesi) geçmeden önce.
+**Sıradaki en anlamlı iş:** Faz 2'nin motor kısmını gerçek koda dönüştürmek —
+
+1. Kaynak doğruluk oranı hesaplama fonksiyonu (şu an `source_accuracy_score` elle girilmiş sabit değer)
+2. `rumor_tracking` durum geçişlerini uygulayan/doğrulayan kod (şu an sadece statik kayıt okunuyor)
+3. Gürültü filtresi ("Yüksek Yanlış Olasılığı" etiketi)
+
+— ya da Faz 4'ün zincirleme etki hesaplamasına geçmek. Hangisi öncelikli, kullanıcıya sorulmalı.
 
 ---
 

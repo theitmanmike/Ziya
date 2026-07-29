@@ -11,9 +11,7 @@ export function PredictionSummary({ prediction }: { prediction: Prediction }) {
       <p className="mt-1 font-medium tabular-nums">
         {formatPct(prediction.expected_change_low)} / {formatPct(prediction.expected_change_high)}
       </p>
-      <p className="mt-1 text-xs text-muted">
-        Dayanak: {prediction.basis_event_count} benzer olay
-      </p>
+      <p className="mt-1 text-xs text-muted">Dayanak: {prediction.basis_event_count} benzer olay</p>
     </div>
   );
 }

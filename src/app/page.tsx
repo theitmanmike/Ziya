@@ -31,8 +31,8 @@ export default async function DashboardPage() {
 
       {events.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border p-10 text-center text-muted">
-          Henüz kayıtlı olay yok. <code className="text-foreground">supabase/seed.sql</code> dosyasını
-          çalıştırarak demo verilerini yükleyebilirsiniz.
+          Henüz kayıtlı olay yok. <code className="text-foreground">supabase/seed.sql</code>{" "}
+          dosyasını çalıştırarak demo verilerini yükleyebilirsiniz.
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -61,8 +61,9 @@ function SetupNeeded({ reason, detail }: { reason: "env" | "db"; detail?: string
           <>
             <p className="mt-2 text-sm text-foreground">
               Veritabanına bağlanılamadı veya şema henüz oluşturulmadı.{" "}
-              <code>supabase/migrations/</code> altındaki SQL dosyalarını Supabase SQL Editor&apos;de
-              sırayla çalıştırın, ardından <code>supabase/seed.sql</code> ile demo verilerini yükleyin.
+              <code>supabase/migrations/</code> altındaki SQL dosyalarını Supabase SQL
+              Editor&apos;de sırayla çalıştırın, ardından <code>supabase/seed.sql</code> ile demo
+              verilerini yükleyin.
             </p>
             {detail && (
               <p className="mt-3 rounded-md bg-surface px-3 py-2 font-mono text-xs text-muted">

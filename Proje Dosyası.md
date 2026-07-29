@@ -2,14 +2,14 @@
 
 **Olay Odaklı Hisse Senedi Etki Tahmin Ajanı**
 
-| | |
-|---|---|
-| **Proje Adı** | Ziya |
+|                  |                                                   |
+| ---------------- | ------------------------------------------------- |
+| **Proje Adı**    | Ziya                                              |
 | **Doküman Türü** | Proje Tanım Dosyası (Project Definition Document) |
-| **Sürüm** | v2.0 |
-| **Tarih** | 28 Temmuz 2026 |
-| **Durum** | Taslak — İç Değerlendirme |
-| **Gizlilik** | Şirket İçi Kullanım |
+| **Sürüm**        | v2.0                                              |
+| **Tarih**        | 28 Temmuz 2026                                    |
+| **Durum**        | Taslak — İç Değerlendirme                         |
+| **Gizlilik**     | Şirket İçi Kullanım                               |
 
 ---
 
@@ -54,7 +54,7 @@ Günümüz finansal ekosisteminde yatırımcılar fiyat grafiklerine, işlem hac
 
 Piyasaya yeni bir haber düştüğünde yatırımcının karşılaştığı temel belirsizlik şudur:
 
-> *"Bu haber gerçekten önemli mi? Fiyatı %0,4 mü etkiler, %15 mi? Geçmişte benzer durumlarda piyasa nasıl tepki verdi?"*
+> _"Bu haber gerçekten önemli mi? Fiyatı %0,4 mü etkiler, %15 mi? Geçmişte benzer durumlarda piyasa nasıl tepki verdi?"_
 
 Bu soruyu bugün yanıtlamak için yatırımcının:
 
@@ -66,12 +66,12 @@ gerekmektedir. Bu süreç **saatler sürer**; oysa piyasa tepkisi **dakikalar i�
 
 ### 2.3. Hedef Kitle
 
-| Segment | İhtiyaç |
-|---|---|
-| Bireysel yatırımcılar | Haber akışını hızlı ve veriye dayalı yorumlama |
-| Portföy yöneticileri / fon ekipleri | Olay bazlı risk ve fırsat taraması |
-| Algoritmik trading ekipleri | Yapılandırılmış olay-etki verisi (API) |
-| Finansal medya ve araştırma kuruluşları | Olay etki arşivi ve raporlama |
+| Segment                                 | İhtiyaç                                        |
+| --------------------------------------- | ---------------------------------------------- |
+| Bireysel yatırımcılar                   | Haber akışını hızlı ve veriye dayalı yorumlama |
+| Portföy yöneticileri / fon ekipleri     | Olay bazlı risk ve fırsat taraması             |
+| Algoritmik trading ekipleri             | Yapılandırılmış olay-etki verisi (API)         |
+| Finansal medya ve araştırma kuruluşları | Olay etki arşivi ve raporlama                  |
 
 ---
 
@@ -81,13 +81,13 @@ Ziya, her haberi izole bir metin olarak değil; **bağlamıyla birlikte mühürl
 
 > **"Piyasaya düşen her haberi, geçmişteki binlerce benzeriyle saniyeler içinde karşılaştırır ve olası fiyat etkisini güven skoruyla birlikte sunar."**
 
-| Geleneksel Yaklaşım | Ziya |
-|---|---|
-| Haber okunur, etki tahmini sezgiseldir | Etki tahmini geçmiş verilere dayalıdır |
-| Kaynak güvenilirliği öznel değerlendirilir | Kaynaklar hiyerarşik güven skoruyla puanlanır |
-| Söylentiler ya yok sayılır ya körce takip edilir | Söylentiler etiketlenir ve doğruluk oranı izlenir |
-| Geçmiş olaylar unutulur | Her olay kalıcı hafızaya yazılır ve referans olur |
-| Tahmin sonrası öğrenme yoktur | Gerçekleşen sonuçla tahmin karşılaştırılır, model güncellenir |
+| Geleneksel Yaklaşım                              | Ziya                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------- |
+| Haber okunur, etki tahmini sezgiseldir           | Etki tahmini geçmiş verilere dayalıdır                        |
+| Kaynak güvenilirliği öznel değerlendirilir       | Kaynaklar hiyerarşik güven skoruyla puanlanır                 |
+| Söylentiler ya yok sayılır ya körce takip edilir | Söylentiler etiketlenir ve doğruluk oranı izlenir             |
+| Geçmiş olaylar unutulur                          | Her olay kalıcı hafızaya yazılır ve referans olur             |
+| Tahmin sonrası öğrenme yoktur                    | Gerçekleşen sonuçla tahmin karşılaştırılır, model güncellenir |
 
 ---
 
@@ -110,12 +110,12 @@ Aşağıdaki senaryolar, sistemin farklı olay türlerinde uçtan uca nasıl ça
 
 5. **Gerçekleşme takibi:**
 
-| Zaman Dilimi | Fiyat | Değişim | Piyasa Durumu |
-|---|---|---|---|
-| Haberden 1 saat önce | 241,12 $ | — | Stabil |
-| Haber anı (T0) | 247,54 $ | +%2,67 | Ani hacim artışı |
-| 24 saat sonra | 255,00 $ | +%5,76 | Yüksek hacim |
-| 1 hafta sonra | 267,00 $ | +%10,71 | Trend oluşumu |
+| Zaman Dilimi         | Fiyat    | Değişim | Piyasa Durumu    |
+| -------------------- | -------- | ------- | ---------------- |
+| Haberden 1 saat önce | 241,12 $ | —       | Stabil           |
+| Haber anı (T0)       | 247,54 $ | +%2,67  | Ani hacim artışı |
+| 24 saat sonra        | 255,00 $ | +%5,76  | Yüksek hacim     |
+| 1 hafta sonra        | 267,00 $ | +%10,71 | Trend oluşumu    |
 
 6. **Öğrenme:** Tahmin (+%3,5 / +%5,5) ile gerçekleşme (+%5,76) karşılaştırılır; sapma hesaplanıp modele geri beslenir ve olay, gelecekteki "yeni pazar yatırımı" haberleri için referans olarak hafızaya mühürlenir.
 
@@ -181,12 +181,12 @@ Bu senaryo, sistemin yalnızca ABD piyasalarına değil; **KAP entegrasyonu üze
 1. **Birincil analiz:** Nvidia için geçmiş çip lansmanları taranır (kendi geçmiş lansmanları + AMD, Intel, Google ve Apple'ın benzer tanıtımları). Ortalama 1 haftalık etki hesaplanır.
 2. **Zincirleme etki haritası:** Sistem, olayın **ilişkili varlıklar** üzerindeki geçmiş etkilerini de çıkarır:
 
-| Varlık | İlişki | Geçmiş Benzer Olaylardaki Ortalama Tepki (1 hafta) |
-|---|---|---|
-| NVDA | Birincil | +%5,2 |
-| TSM | Üretici (foundry) | +%2,1 |
-| AMD | Rakip | −%1,8 |
-| SMCI | Sunucu entegratörü | +%3,4 |
+| Varlık | İlişki             | Geçmiş Benzer Olaylardaki Ortalama Tepki (1 hafta) |
+| ------ | ------------------ | -------------------------------------------------- |
+| NVDA   | Birincil           | +%5,2                                              |
+| TSM    | Üretici (foundry)  | +%2,1                                              |
+| AMD    | Rakip              | −%1,8                                              |
+| SMCI   | Sunucu entegratörü | +%3,4                                              |
 
 3. **Portföy perspektifi:** Kullanıcı yalnızca "Nvidia ne yapar?" sorusunun değil, "elimdeki AMD bu haberden nasıl etkilenir?" sorusunun da cevabını tek ekranda görür.
 
@@ -198,27 +198,27 @@ Her haber, sisteme düştüğü anda çevresindeki piyasa koşullarıyla birlikt
 
 ### 5.1. Olay Kaydı Alanları
 
-| Alan | Açıklama | Örnek |
-|---|---|---|
-| `event_id` | Benzersiz olay kimliği | `EVT-2026-0112-004731` |
-| `timestamp` | Olayın algılanma zamanı (UTC) | `2026-01-12T15:31:04Z` |
-| `source` | Haber kaynağı | Bloomberg |
-| `trust_score` | Kaynak güven skoru (0–100) | 97 |
-| `asset` | İlgili varlık(lar) | TSLA |
-| `category` | Olay kategorisi | Kapasite Yatırımı |
-| `sentiment` | Duygu analizi sonucu | Pozitif (0,82) |
-| `status` | Doğrulama durumu | Confirmed |
-| `market_context` | Olay anındaki fiyat/hacim/volatilite penceresi | Aşağıdaki matris |
-| `embedding` | Vektör temsili (benzerlik araması için) | `float[1536]` |
+| Alan             | Açıklama                                       | Örnek                  |
+| ---------------- | ---------------------------------------------- | ---------------------- |
+| `event_id`       | Benzersiz olay kimliği                         | `EVT-2026-0112-004731` |
+| `timestamp`      | Olayın algılanma zamanı (UTC)                  | `2026-01-12T15:31:04Z` |
+| `source`         | Haber kaynağı                                  | Bloomberg              |
+| `trust_score`    | Kaynak güven skoru (0–100)                     | 97                     |
+| `asset`          | İlgili varlık(lar)                             | TSLA                   |
+| `category`       | Olay kategorisi                                | Kapasite Yatırımı      |
+| `sentiment`      | Duygu analizi sonucu                           | Pozitif (0,82)         |
+| `status`         | Doğrulama durumu                               | Confirmed              |
+| `market_context` | Olay anındaki fiyat/hacim/volatilite penceresi | Aşağıdaki matris       |
+| `embedding`      | Vektör temsili (benzerlik araması için)        | `float[1536]`          |
 
 ### 5.2. Piyasa Bağlamı Matrisi (Örnek: Tesla Fabrika Duyurusu)
 
-| Zaman Dilimi | Fiyat | Değişim | Hacim / Volatilite |
-|---|---|---|---|
-| T0 − 1 saat | 241,12 $ | — | Stabil |
-| T0 (haber anı) | 247,54 $ | +%2,67 | Ani hacim artışı |
-| T0 + 24 saat | 255,00 $ | +%5,76 | Yüksek |
-| T0 + 1 hafta | 267,00 $ | +%10,71 | Trend oluşumu |
+| Zaman Dilimi   | Fiyat    | Değişim | Hacim / Volatilite |
+| -------------- | -------- | ------- | ------------------ |
+| T0 − 1 saat    | 241,12 $ | —       | Stabil             |
+| T0 (haber anı) | 247,54 $ | +%2,67  | Ani hacim artışı   |
+| T0 + 24 saat   | 255,00 $ | +%5,76  | Yüksek             |
+| T0 + 1 hafta   | 267,00 $ | +%10,71 | Trend oluşumu      |
 
 Bu matris, olayla birlikte kalıcı hafızaya yazılır ve gelecekteki benzer haberler için **referans noktası** olur.
 
@@ -239,12 +239,12 @@ Her habere 100 üzerinden bir **etki skoru** ve bir **güven skoru** atanır.
 
 **Kaynak güven hiyerarşisi:**
 
-| Kademe | Kaynak Türü | Güven Skoru |
-|---|---|---|
-| 1 | KAP / SEC / resmî şirket bildirimi | 100 |
-| 2 | Reuters / Bloomberg | 97–98 |
-| 3 | Doğrulanmış X (Twitter) hesapları | 50–70 |
-| 4 | Reddit / Discord / Telegram / anonim forumlar | 10–30 |
+| Kademe | Kaynak Türü                                   | Güven Skoru |
+| ------ | --------------------------------------------- | ----------- |
+| 1      | KAP / SEC / resmî şirket bildirimi            | 100         |
+| 2      | Reuters / Bloomberg                           | 97–98       |
+| 3      | Doğrulanmış X (Twitter) hesapları             | 50–70       |
+| 4      | Reddit / Discord / Telegram / anonim forumlar | 10–30       |
 
 ### 6.2. Söylenti Motoru (Rumor Engine)
 
@@ -321,13 +321,13 @@ Bu döngü sayesinde sistemin tahmin isabeti, işlediği her olayla birlikte **�
 
 Mimari beş katmandan oluşur:
 
-| # | Katman | Sorumluluk | Örnek Bileşenler |
-|---|---|---|---|
-| 1 | **Veri Toplama Katmanı** | Ham verinin dış kaynaklardan çekilmesi | Haber API'leri, KAP/SEC akışları, sosyal medya toplayıcıları |
-| 2 | **Olay Normalizasyon Katmanı** | Dağınık verinin standart yapıya dönüştürülmesi | Tarih/saat, şirket, varlık ve kategori alanlarıyla yapısal JSON |
-| 3 | **Event Memory (Vektör Veri Tabanı)** | Olayların vektörel saklanması ve hızlı benzerlik araması | Embedding üretimi, ANN indeksleme |
-| 4 | **Birleşik Analiz Motorları** | Piyasa ve metin analizinin paralel yürütülmesi | Piyasa Veri Motoru (OHLCV, hacim, volatilite) • NLP Motoru (duygu, varlık, konu çıkarımı) |
-| 5 | **Tahmin ve Karar Motoru (AI Engine)** | Nihai raporun üretilmesi | Kısa/orta/uzun vade senaryoları; güven skoru, beklenen tepki, risk durumu |
+| #   | Katman                                 | Sorumluluk                                               | Örnek Bileşenler                                                                          |
+| --- | -------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | **Veri Toplama Katmanı**               | Ham verinin dış kaynaklardan çekilmesi                   | Haber API'leri, KAP/SEC akışları, sosyal medya toplayıcıları                              |
+| 2   | **Olay Normalizasyon Katmanı**         | Dağınık verinin standart yapıya dönüştürülmesi           | Tarih/saat, şirket, varlık ve kategori alanlarıyla yapısal JSON                           |
+| 3   | **Event Memory (Vektör Veri Tabanı)**  | Olayların vektörel saklanması ve hızlı benzerlik araması | Embedding üretimi, ANN indeksleme                                                         |
+| 4   | **Birleşik Analiz Motorları**          | Piyasa ve metin analizinin paralel yürütülmesi           | Piyasa Veri Motoru (OHLCV, hacim, volatilite) • NLP Motoru (duygu, varlık, konu çıkarımı) |
+| 5   | **Tahmin ve Karar Motoru (AI Engine)** | Nihai raporun üretilmesi                                 | Kısa/orta/uzun vade senaryoları; güven skoru, beklenen tepki, risk durumu                 |
 
 **Veri akışı:** Dış kaynaklar → (1) Toplama → (2) Normalizasyon → (3) Hafızaya yazma + (4) Analiz motorları → (5) Tahmin → Kullanıcı arayüzü / API → Gerçekleşme takibi → (3) Hafıza güncelleme.
 
@@ -335,14 +335,14 @@ Mimari beş katmandan oluşur:
 
 ## 9. Başarı Kriterleri ve KPI'lar
 
-| KPI | Tanım | Hedef (v1) |
-|---|---|---|
-| **Tahmin isabet oranı** | 24 saatlik yön tahmininin doğruluk yüzdesi | ≥ %70 |
-| **Tepki süresi** | Haberin algılanmasından tahmin yayınına kadar geçen süre | ≤ 10 saniye |
-| **Söylenti doğrulama başarısı** | `Confirmed` olan söylentilerin erken tespit oranı | ≥ %60 |
-| **Yanlış alarm oranı** | `False` çıkan olaylara verilen yüksek etki skorlarının oranı | ≤ %15 |
-| **Hafıza kapsamı** | Event Memory'deki etiketlenmiş olay sayısı | 100.000+ olay (ilk yıl) |
-| **Model iyileşme eğrisi** | Aylık ortalama tahmin hatasındaki (MAE) azalma | Çeyreklik bazda ölçülebilir düşüş |
+| KPI                             | Tanım                                                        | Hedef (v1)                        |
+| ------------------------------- | ------------------------------------------------------------ | --------------------------------- |
+| **Tahmin isabet oranı**         | 24 saatlik yön tahmininin doğruluk yüzdesi                   | ≥ %70                             |
+| **Tepki süresi**                | Haberin algılanmasından tahmin yayınına kadar geçen süre     | ≤ 10 saniye                       |
+| **Söylenti doğrulama başarısı** | `Confirmed` olan söylentilerin erken tespit oranı            | ≥ %60                             |
+| **Yanlış alarm oranı**          | `False` çıkan olaylara verilen yüksek etki skorlarının oranı | ≤ %15                             |
+| **Hafıza kapsamı**              | Event Memory'deki etiketlenmiş olay sayısı                   | 100.000+ olay (ilk yıl)           |
+| **Model iyileşme eğrisi**       | Aylık ortalama tahmin hatasındaki (MAE) azalma               | Çeyreklik bazda ölçülebilir düşüş |
 
 ---
 
@@ -357,41 +357,41 @@ Mimari beş katmandan oluşur:
 
 ### 10.2. Risk Matrisi
 
-| Risk | Olasılık | Etki | Azaltım |
-|---|---|---|---|
-| Manipülatif söylentilerin (pump & dump) sisteme sızması | Yüksek | Yüksek | Kaynak doğruluk geçmişi + düşük güven skorlu kaynakların tahmin üretmemesi |
-| Geçmiş desenlerin tekrar etmemesi (rejim değişikliği) | Orta | Yüksek | Güven skorunun piyasa rejimi değişkenlerine duyarlı hale getirilmesi |
-| Veri sağlayıcı kesintisi | Orta | Orta | Çoklu kaynak yedekliliği |
-| Aşırı kullanıcı güveni (tahminlerin kesinlik sanılması) | Yüksek | Orta | Her tahminin aralık + güven skoru + dayanak olay sayısıyla sunulması |
-| Sosyal medya API erişim politikalarının değişmesi | Orta | Orta | Kaynak çeşitliliği; tek platforma bağımlılığın önlenmesi |
+| Risk                                                    | Olasılık | Etki   | Azaltım                                                                    |
+| ------------------------------------------------------- | -------- | ------ | -------------------------------------------------------------------------- |
+| Manipülatif söylentilerin (pump & dump) sisteme sızması | Yüksek   | Yüksek | Kaynak doğruluk geçmişi + düşük güven skorlu kaynakların tahmin üretmemesi |
+| Geçmiş desenlerin tekrar etmemesi (rejim değişikliği)   | Orta     | Yüksek | Güven skorunun piyasa rejimi değişkenlerine duyarlı hale getirilmesi       |
+| Veri sağlayıcı kesintisi                                | Orta     | Orta   | Çoklu kaynak yedekliliği                                                   |
+| Aşırı kullanıcı güveni (tahminlerin kesinlik sanılması) | Yüksek   | Orta   | Her tahminin aralık + güven skoru + dayanak olay sayısıyla sunulması       |
+| Sosyal medya API erişim politikalarının değişmesi       | Orta     | Orta   | Kaynak çeşitliliği; tek platforma bağımlılığın önlenmesi                   |
 
 ---
 
 ## 11. Yol Haritası
 
-| Faz | Kapsam | Süre (tahmini) |
-|---|---|---|
-| **Faz 1 — MVP** | Tek piyasa (ABD büyük hisseleri), resmî kaynaklar (Tier 1–2), temel Event Memory ve benzer olay araması | 3 ay |
-| **Faz 2 — Rumor Engine** | Sosyal medya kaynakları, söylenti yaşam döngüsü, doğruluk puanlama | +2 ay |
-| **Faz 3 — Yerel Piyasa** | KAP entegrasyonu, BIST kapsamı, seans dışı bildirim mantığı | +2 ay |
-| **Faz 4 — Zincirleme Etki** | İlişkili varlık haritası, sektörel etki analizi, portföy perspektifi | +3 ay |
-| **Faz 5 — API ve Kurumsal** | Kurumsal API, gerçek zamanlı webhook, raporlama modülü | +2 ay |
+| Faz                         | Kapsam                                                                                                  | Süre (tahmini) |
+| --------------------------- | ------------------------------------------------------------------------------------------------------- | -------------- |
+| **Faz 1 — MVP**             | Tek piyasa (ABD büyük hisseleri), resmî kaynaklar (Tier 1–2), temel Event Memory ve benzer olay araması | 3 ay           |
+| **Faz 2 — Rumor Engine**    | Sosyal medya kaynakları, söylenti yaşam döngüsü, doğruluk puanlama                                      | +2 ay          |
+| **Faz 3 — Yerel Piyasa**    | KAP entegrasyonu, BIST kapsamı, seans dışı bildirim mantığı                                             | +2 ay          |
+| **Faz 4 — Zincirleme Etki** | İlişkili varlık haritası, sektörel etki analizi, portföy perspektifi                                    | +3 ay          |
+| **Faz 5 — API ve Kurumsal** | Kurumsal API, gerçek zamanlı webhook, raporlama modülü                                                  | +2 ay          |
 
 ---
 
 ## 12. Sözlük
 
-| Terim | Açıklama |
-|---|---|
-| **Event Object** | Bir haberin, algılandığı andaki piyasa bağlamıyla birlikte mühürlenmiş kalıcı kaydı |
-| **Event Memory** | Tüm olay kayıtlarının vektörel olarak saklandığı, benzerlik aramasına açık veri tabanı |
-| **T0** | Haberin sisteme düştüğü an (referans zaman noktası) |
-| **Trust Score** | Kaynağın tarihsel güvenilirliğine dayalı 0–100 arası puan |
-| **Rumor Accuracy** | Bir kaynağın/söylenti tipinin zamanla gerçeğe dönüşme oranı |
-| **Short Squeeze** | Yüksek açık pozisyonların zorunlu kapatılmasıyla oluşan sert yükseliş |
-| **OHLCV** | Açılış, En Yüksek, En Düşük, Kapanış fiyatları ve Hacim verisi |
-| **Sentiment** | Metnin veya piyasanın duygu yönü (pozitif/negatif/nötr) |
+| Terim              | Açıklama                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| **Event Object**   | Bir haberin, algılandığı andaki piyasa bağlamıyla birlikte mühürlenmiş kalıcı kaydı    |
+| **Event Memory**   | Tüm olay kayıtlarının vektörel olarak saklandığı, benzerlik aramasına açık veri tabanı |
+| **T0**             | Haberin sisteme düştüğü an (referans zaman noktası)                                    |
+| **Trust Score**    | Kaynağın tarihsel güvenilirliğine dayalı 0–100 arası puan                              |
+| **Rumor Accuracy** | Bir kaynağın/söylenti tipinin zamanla gerçeğe dönüşme oranı                            |
+| **Short Squeeze**  | Yüksek açık pozisyonların zorunlu kapatılmasıyla oluşan sert yükseliş                  |
+| **OHLCV**          | Açılış, En Yüksek, En Düşük, Kapanış fiyatları ve Hacim verisi                         |
+| **Sentiment**      | Metnin veya piyasanın duygu yönü (pozitif/negatif/nötr)                                |
 
 ---
 
-*Bu doküman Ziya projesinin tanım dosyasıdır; teknik tasarım detayları ayrı bir Teknik Tasarım Dokümanı (TDD) kapsamında ele alınacaktır.*
+_Bu doküman Ziya projesinin tanım dosyasıdır; teknik tasarım detayları ayrı bir Teknik Tasarım Dokümanı (TDD) kapsamında ele alınacaktır._

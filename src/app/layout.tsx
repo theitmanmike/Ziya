@@ -25,10 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="tr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="tr" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <header className="border-b border-border">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -51,8 +48,8 @@ export default function RootLayout({
         <footer className="border-t border-border">
           <div className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted sm:px-6">
             <p>
-              Ziya bir karar destek aracıdır; sunulan tahminler geçmiş
-              olayların istatistiksel analizine dayanır ve{" "}
+              Ziya bir karar destek aracıdır; sunulan tahminler geçmiş olayların istatistiksel
+              analizine dayanır ve{" "}
               <strong className="text-foreground">yatırım tavsiyesi değildir</strong>.
             </p>
           </div>

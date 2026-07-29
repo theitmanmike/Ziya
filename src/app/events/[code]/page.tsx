@@ -5,16 +5,14 @@ import { TrustBadge } from "@/components/TrustBadge";
 import { PredictionSummary } from "@/components/PredictionSummary";
 import { MarketContextTable } from "@/components/MarketContextTable";
 import { RumorTimeline } from "@/components/RumorTimeline";
+import { LivePredictionPanel } from "@/components/LivePredictionPanel";
 import { formatDateTime, RELATION_LABELS } from "@/lib/format";
 import { getEventByCode } from "@/lib/events";
+import { computeLivePredictions } from "@/lib/predictions";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventDetailPage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
+export default async function EventDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const event = await getEventByCode(code);
 
@@ -23,6 +21,7 @@ export default async function EventDetailPage({
   }
 
   const assetIds = [...new Set(event.assets.map((a) => a.asset.id))];
+  const livePredictions = await computeLivePredictions(event.category, event.id);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -70,7 +69,9 @@ export default async function EventDetailPage({
                   </span>
                   <span className="text-sm text-muted">{link.asset.name}</span>
                 </div>
-                <span className="text-xs text-muted">{RELATION_LABELS[link.relation] ?? link.relation}</span>
+                <span className="text-xs text-muted">
+                  {RELATION_LABELS[link.relation] ?? link.relation}
+                </span>
               </div>
 
               {contextRows.length > 0 && (
@@ -80,10 +81,26 @@ export default async function EventDetailPage({
               )}
 
               {predictions.length > 0 && (
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  {predictions.map((prediction) => (
-                    <PredictionSummary key={prediction.id} prediction={prediction} />
-                  ))}
+                <div className="mt-4">
+                  <p className="mb-2 text-xs font-medium text-muted">Kayıtlı İlk Tahmin</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {predictions.map((prediction) => (
+                      <PredictionSummary key={prediction.id} prediction={prediction} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {link.relation === "birincil" && (
+                <div className="mt-4">
+                  <p className="mb-2 text-xs font-medium text-muted">
+                    Canlı Hesaplanan Tahmin (aynı kategorideki olayların ortalaması)
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {livePredictions.map((prediction) => (
+                      <LivePredictionPanel key={prediction.horizon} prediction={prediction} />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -93,9 +110,12 @@ export default async function EventDetailPage({
 
       <section className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted">
         <p>
-          <strong className="text-foreground">Benzer Olay Arama:</strong> Bu olay için vektörel
-          benzerlik araması, embedding üretimi Faz 5&apos;te bir embedding API&apos;siyle
-          bağlandığında burada aktif olacaktır (bkz. <code>match_events</code> fonksiyonu,{" "}
+          <strong className="text-foreground">Benzer Olay Arama:</strong> Canlı hesaplanan tahminler
+          şu an yalnızca <strong className="text-foreground">kategori eşleşmesine</strong> dayanıyor
+          (bkz. <code>compute_category_prediction</code>,{" "}
+          <code>supabase/migrations/0003_prediction_engine.sql</code>). Gerçek vektörel benzerlik
+          araması, embedding üretimi Faz 5&apos;te bir embedding API&apos;siyle bağlandığında bunun
+          yerini alacak (bkz. <code>match_events</code>,{" "}
           <code>supabase/migrations/0002_similarity_search.sql</code>).
         </p>
       </section>
