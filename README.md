@@ -1,5 +1,7 @@
 # Ziya
 
+[![CI](https://github.com/theitmanmike/Ziya/actions/workflows/ci.yml/badge.svg)](https://github.com/theitmanmike/Ziya/actions/workflows/ci.yml)
+
 **Olay Odaklı Hisse Senedi Etki Tahmin Ajanı**
 
 Ziya, piyasaya düşen her haberi geçmişteki binlerce benzer olayla karşılaştırıp
@@ -49,14 +51,16 @@ için [TODO.md](TODO.md) dosyasına bakın.
 
 ## Komutlar
 
-| Komut                  | Açıklama                         |
-| ---------------------- | -------------------------------- |
-| `npm run dev`          | Geliştirme sunucusu (Turbopack)  |
-| `npm run build`        | Prodüksiyon derlemesi            |
-| `npm run start`        | Prodüksiyon sunucusu             |
-| `npm run lint`         | ESLint kontrolü                  |
-| `npm run format`       | Prettier ile kodu formatla       |
-| `npm run format:check` | Formatı değiştirmeden kontrol et |
+| Komut                  | Açıklama                           |
+| ---------------------- | ---------------------------------- |
+| `npm run dev`          | Geliştirme sunucusu (Turbopack)    |
+| `npm run build`        | Prodüksiyon derlemesi              |
+| `npm run start`        | Prodüksiyon sunucusu               |
+| `npm run lint`         | ESLint kontrolü                    |
+| `npm run format`       | Prettier ile kodu formatla         |
+| `npm run format:check` | Formatı değiştirmeden kontrol et   |
+| `npm test`             | Vitest ile birim testleri çalıştır |
+| `npm run test:watch`   | Testleri izleme modunda çalıştır   |
 
 ## Proje Yapısı
 
@@ -72,6 +76,13 @@ supabase/
   migrations/          # SQL şema tanımları
   seed.sql             # Demo veri (5 gerçek hayat senaryosu)
 ```
+
+## CI/CD
+
+Her push ve pull request'te GitHub Actions (`.github/workflows/ci.yml`)
+format kontrolü, lint, test ve build'i çalıştırır — hiçbir ortam
+değişkeni/secret gerektirmez (sayfalar `force-dynamic` olduğu için
+Supabase bağlantısı build zamanında değil, istek zamanında kurulur).
 
 ## Dağıtım
 

@@ -67,3 +67,18 @@ function clamp(value: number, min: number, max: number): number {
 function round3(value: number): number {
   return Math.round(value * 1000) / 1000;
 }
+
+const NOISE_TRUST_THRESHOLD = 30;
+const NOISE_ACCURACY_THRESHOLD = 50;
+
+/**
+ * Gürültü filtresi: düşük güven skorlu VE (doğruluk geçmişi zayıf ya da henüz
+ * kanıtlanmamış) kaynaklardan gelen olayları işaretler. Kural tabanlı bir
+ * sezgiseldir, ML modeli değildir — bkz. Proje Dosyası.md Bölüm 6.2.
+ */
+export function isNoiseFlagged(trustScore: number, accuracyPct: number | null): boolean {
+  return (
+    trustScore < NOISE_TRUST_THRESHOLD &&
+    (accuracyPct === null || accuracyPct < NOISE_ACCURACY_THRESHOLD)
+  );
+}

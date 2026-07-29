@@ -1,9 +1,9 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
+export { isNoiseFlagged } from "@/lib/statUtils";
+
 const MIN_RESOLVED_COUNT = 3;
-const NOISE_TRUST_THRESHOLD = 30;
-const NOISE_ACCURACY_THRESHOLD = 50;
 
 export interface SourceAccuracy {
   confirmedCount: number;
@@ -40,16 +40,4 @@ export async function computeSourceAccuracy(sourceId: string): Promise<SourceAcc
     resolvedCount,
     accuracyPct: sufficientData ? data.accuracy_pct : null,
   };
-}
-
-/**
- * Gürültü filtresi: düşük güven skorlu VE (doğruluk geçmişi zayıf ya da henüz
- * kanıtlanmamış) kaynaklardan gelen olayları işaretler. Kural tabanlı bir
- * sezgiseldir, ML modeli değildir — bkz. Proje Dosyası.md Bölüm 6.2.
- */
-export function isNoiseFlagged(trustScore: number, accuracyPct: number | null): boolean {
-  return (
-    trustScore < NOISE_TRUST_THRESHOLD &&
-    (accuracyPct === null || accuracyPct < NOISE_ACCURACY_THRESHOLD)
-  );
 }

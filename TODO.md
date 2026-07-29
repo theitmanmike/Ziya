@@ -86,12 +86,12 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 ## Sürekli / Yatay Konular
 
-- [ ] Kimlik doğrulama (Supabase Auth — e-posta + OAuth)
-- [ ] Kullanıcı ayarları: izlenen varlıklar, bildirim tercihleri
-- [ ] Test altyapısı: birim testleri (Vitest) + uçtan uca testler (Playwright)
-- [ ] CI/CD: GitHub Actions ile lint + test + build kontrolü, Vercel otomatik deploy
-- [ ] Hata izleme (Sentry veya eşdeğeri)
-- [ ] Performans: sayfa yükleme, veritabanı sorgu indeksleri (`pgvector` ANN indeksi)
+- [ ] Kimlik doğrulama (Supabase Auth — e-posta + OAuth) — **bilinçli olarak ertelendi**: şu an auth gerektiren hiçbir özellik yok (izleme listesi, admin aksiyonları vb.), önce bir gerçek kullanım alanı doğmalı
+- [ ] Kullanıcı ayarları: izlenen varlıklar, bildirim tercihleri — auth'a bağımlı
+- [x] Test altyapısı: birim testleri (Vitest) — `statUtils.ts`'teki gerçek hesaplama mantığı (`toLivePrediction`, `isNoiseFlagged`) için 11 test, hepsi geçiyor. Uçtan uca testler (Playwright) **henüz yok**.
+- [x] CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — her push/PR'da format kontrolü + lint + test + build; hiçbir secret gerektirmiyor (doğrulandı: `.env.local` olmadan build başarılı). Vercel zaten GitHub entegrasyonu üzerinden otomatik deploy ediyor.
+- [ ] Hata izleme (Sentry veya eşdeğeri) — ⛔ Sentry DSN/API anahtarı gerektirir
+- [ ] Performans: sayfa yükleme, veritabanı sorgu indeksleri (`pgvector` ANN indeksi zaten `0002`'de var, veri arttıkça `REINDEX` gerekebilir)
 - [ ] Erişilebilirlik (a11y) kontrolü
 - [ ] Yasal/uyumluluk metinleri: Kullanım Şartları, Gizlilik Politikası, "yatırım tavsiyesi değildir" feragatnamesi
 - [ ] Çoklu dil desteği (TR/EN) — opsiyonel
