@@ -54,10 +54,10 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 ## Faz 2 — Söylenti Motoru (Rumor Engine)
 
-- [ ] `rumor_tracking` durum makinesi — tablo ve seed verisi 3 aşamayı (rumor→unverified→confirmed) **gösteriyor**, ama geçişleri uygulayan/doğrulayan bir kod yok; sadece statik kayıtlar okunuyor
-- [ ] Kaynak doğruluk oranı hesaplama fonksiyonu — **yapılmadı**, `source_accuracy_score` seed'de elle girilmiş sabit değer
+- [ ] `rumor_tracking` durum makinesi — tablo ve seed verisi 3 aşamayı (rumor→unverified→confirmed) **gösteriyor**, ama geçişleri uygulayan/doğrulayan bir kod yok; sadece statik kayıtlar okunuyor. **Bilinçli olarak ertelendi:** gerçek bir geçiş mekanizması (admin aksiyonu mu, zamanlanmış job mı?) auth/admin yüzeyi gerektiriyor, o olmadan yapılırsa uydurma olur.
+- [x] Kaynak doğruluk oranı hesaplama fonksiyonu — `compute_source_accuracy` (Postgres, `0004_source_accuracy.sql`) + `src/lib/sources.ts`. Kaynağın sonuçlanmış (confirmed/false) olaylarındaki gerçek doğruluk yüzdesini hesaplıyor; 3'ten az sonuçlanmış olay varsa "yeterli veri yok" gösteriyor (uydurma seed değeri değil). Reddit (18/100 güven, 1 sonuçlanmış olay) ve Bloomberg (97/100, 1 sonuçlanmış olay) ile tarayıcıda doğrulandı.
 - [ ] ⛔ Sosyal medya kaynak entegrasyonları (Reddit API, X API, Telegram) — API erişim onayı gerekir
-- [ ] Gürültü filtresi: düşük güven skorlu kaynaklardan gelen olaylar için "Yüksek Yanlış Olasılığı" etiketi — **yapılmadı**
+- [x] Gürültü filtresi: `isNoiseFlagged` (`src/lib/sources.ts`) — güven skoru <30 VE (doğruluk verisi yok ya da <%50) olan kaynakları "Yüksek Yanlış Olasılığı" ile işaretliyor. Reddit'te (güven 18) doğru şekilde tetikleniyor, Bloomberg'de (güven 97) tetiklenmiyor — tarayıcıda doğrulandı.
 - [x] Söylenti yaşam döngüsü zaman çizelgesi UI bileşeni (`RumorTimeline`, olay detay sayfasında) — canlı veriyle doğrulandı (Apple senaryosu)
 
 ## Faz 3 — Yerel Piyasa (KAP / BIST)
@@ -102,17 +102,11 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 **Faz 0 tamamlandı.** **Faz 1 tamamlandı** — tahmin hesaplaması artık gerçek kod (kategori eşleşmesi, `compute_category_prediction`), yükleme/boş/hata durumları var, mobilde test edildi. Kalan tek gerçek boşluk: benzer olay araması hâlâ vektörel değil, kategori bazlı (embedding Faz 5'i bekliyor) — bu bilinçli bir ara adım, olay detay sayfasında açıkça etiketleniyor.
 
-**Faz 2**'den yalnızca UI kısmı (zaman çizelgesi) var; motor mantığı (durum makinesi, kaynak doğruluk hesaplama, gürültü filtresi) hâlâ yok. **Faz 3/4/5** büyük ölçüde başlanmadı; Faz 4'te sadece statik görselleştirme var, hesaplama yok.
+**Faz 2** artık büyük ölçüde tamamlandı — kaynak doğruluk hesaplaması ve gürültü filtresi gerçek kod, tarayıcıda doğrulandı. Kalan tek parça (bilinçli olarak ertelendi): `rumor_tracking` durum geçişlerini tetikleyen bir yazma mekanizması — bunun için auth/admin yüzeyi gerekiyor. **Faz 3/5** büyük ölçüde başlanmadı; **Faz 4**'te sadece statik görselleştirme var, hesaplama yok.
 
-**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `compute_category_prediction` migration'ı uygulandı.
+**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `compute_category_prediction` ve `compute_source_accuracy` migration'ları uygulandı.
 
-**Sıradaki en anlamlı iş:** Faz 2'nin motor kısmını gerçek koda dönüştürmek —
-
-1. Kaynak doğruluk oranı hesaplama fonksiyonu (şu an `source_accuracy_score` elle girilmiş sabit değer)
-2. `rumor_tracking` durum geçişlerini uygulayan/doğrulayan kod (şu an sadece statik kayıt okunuyor)
-3. Gürültü filtresi ("Yüksek Yanlış Olasılığı" etiketi)
-
-— ya da Faz 4'ün zincirleme etki hesaplamasına geçmek. Hangisi öncelikli, kullanıcıya sorulmalı.
+**Sıradaki en anlamlı iş:** Faz 4 — zincirleme etki hesaplaması (aynı istatistiksel desenin `event_assets.relation` üzerinden genişletilmesi: rakip/tedarikçi/sektör paydaşının geçmişte benzer olaylarda ortalama nasıl tepki verdiğini hesaplamak).
 
 ---
 

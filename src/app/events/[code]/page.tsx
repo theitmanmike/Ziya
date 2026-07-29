@@ -6,9 +6,11 @@ import { PredictionSummary } from "@/components/PredictionSummary";
 import { MarketContextTable } from "@/components/MarketContextTable";
 import { RumorTimeline } from "@/components/RumorTimeline";
 import { LivePredictionPanel } from "@/components/LivePredictionPanel";
+import { SourceAccuracyPanel } from "@/components/SourceAccuracyPanel";
 import { formatDateTime, RELATION_LABELS } from "@/lib/format";
 import { getEventByCode } from "@/lib/events";
 import { computeLivePredictions } from "@/lib/predictions";
+import { computeSourceAccuracy } from "@/lib/sources";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
 
   const assetIds = [...new Set(event.assets.map((a) => a.asset.id))];
   const livePredictions = await computeLivePredictions(event.category, event.id);
+  const sourceAccuracy = await computeSourceAccuracy(event.source.id);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -43,6 +46,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
         <TrustBadge name={event.source.name} trustScore={event.source.trust_score} />
         <span className="text-muted">{formatDateTime(event.occurred_at)}</span>
         <span className="font-mono text-xs text-muted">{event.event_code}</span>
+      </div>
+
+      <div className="mt-2">
+        <SourceAccuracyPanel trustScore={event.source.trust_score} accuracy={sourceAccuracy} />
       </div>
 
       {event.rumor_tracking.length > 0 && (
