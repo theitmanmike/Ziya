@@ -69,13 +69,24 @@ export default async function RootLayout({
               analizine dayanır ve{" "}
               <strong className="text-foreground">yatırım tavsiyesi değildir</strong>.
             </p>
-            <p className="mt-2 flex gap-3">
+            <p className="mt-2 flex flex-wrap gap-3">
               <Link href="/terms" className="hover:text-foreground">
                 Kullanım Şartları
               </Link>
               <Link href="/privacy" className="hover:text-foreground">
                 Gizlilik Politikası
               </Link>
+            </p>
+            <p className="mt-4 border-t border-border pt-4">
+              Proje fikri ve tasarımı:{" "}
+              <a
+                href="https://cicibyte.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground hover:text-brand"
+              >
+                Cicibyte Teknoloji
+              </a>
             </p>
           </div>
         </footer>
