@@ -3,6 +3,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { TrustBadge } from "@/components/TrustBadge";
 import { ChangeValue } from "@/components/ChangeValue";
 import { PredictionSummary } from "@/components/PredictionSummary";
+import { RelativeTime } from "@/components/RelativeTime";
 import { formatDateTime } from "@/lib/format";
 import type { EventWithRelations } from "@/lib/supabase/types";
 
@@ -39,6 +40,8 @@ export function EventCard({ event }: { event: EventWithRelations }) {
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
         <TrustBadge name={event.source.name} trustScore={event.source.trust_score} />
         <span>{formatDateTime(event.occurred_at)}</span>
+        <span>·</span>
+        <RelativeTime iso={event.occurred_at} />
       </div>
 
       <div className="mt-4 flex flex-wrap items-end justify-between gap-3">

@@ -7,6 +7,7 @@ import { MarketContextTable } from "@/components/MarketContextTable";
 import { RumorTimeline } from "@/components/RumorTimeline";
 import { LivePredictionPanel } from "@/components/LivePredictionPanel";
 import { SourceAccuracyPanel } from "@/components/SourceAccuracyPanel";
+import { RelativeTime } from "@/components/RelativeTime";
 import { formatDateTime, RELATION_LABELS } from "@/lib/format";
 import { getEventByCode } from "@/lib/events";
 import { computeLivePredictions } from "@/lib/predictions";
@@ -59,6 +60,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
       <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
         <TrustBadge name={event.source.name} trustScore={event.source.trust_score} />
         <span className="text-muted">{formatDateTime(event.occurred_at)}</span>
+        <span className="text-muted">·</span>
+        <RelativeTime iso={event.occurred_at} className="text-muted" />
         <span className="font-mono text-xs text-muted">{event.event_code}</span>
       </div>
 

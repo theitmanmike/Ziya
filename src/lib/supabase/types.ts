@@ -9,6 +9,17 @@ export type AssetRelation = "birincil" | "rakip" | "tedarikci" | "sektor_paydasi
 export type MarketOffset = "T0-1h" | "T0" | "T0+24h" | "T0+1w";
 export type VolumeState = "stabil" | "ani_hacim_artisi" | "yuksek" | "trend_olusumu";
 export type PredictionHorizon = "1s" | "24s" | "1h";
+export type ProfileRole = "member" | "admin";
+export type SubscriptionTier = "free" | "pro" | "kurumsal";
+
+export interface Profile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: ProfileRole;
+  subscription_tier: SubscriptionTier;
+  created_at: string;
+}
 
 export interface Source {
   id: string;

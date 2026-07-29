@@ -24,9 +24,11 @@ export function formatDateTime(iso: string): string {
 
 export function formatRelative(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
-  const diffH = Math.round(diffMs / (1000 * 60 * 60));
-  if (Math.abs(diffH) < 1) return "az önce";
-  if (Math.abs(diffH) < 24) return `${Math.abs(diffH)} saat ${diffH > 0 ? "önce" : "sonra"}`;
+  const diffMin = Math.round(diffMs / (1000 * 60));
+  if (Math.abs(diffMin) < 1) return "az önce";
+  if (Math.abs(diffMin) < 60) return `${Math.abs(diffMin)} dk ${diffMin > 0 ? "önce" : "sonra"}`;
+  const diffH = Math.round(diffMin / 60);
+  if (Math.abs(diffH) < 24) return `${Math.abs(diffH)} sa ${diffH > 0 ? "önce" : "sonra"}`;
   const diffD = Math.round(diffH / 24);
   return `${Math.abs(diffD)} gün ${diffD > 0 ? "önce" : "sonra"}`;
 }

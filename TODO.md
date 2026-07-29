@@ -77,42 +77,73 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 - [ ] ⛔ Piyasa verisi sağlayıcı entegrasyonu (Alpha Vantage/Finnhub) — API anahtarı ile
 - [ ] ⛔ Haber akışı entegrasyonu (NewsAPI/RSS) — API anahtarı ile
-- [ ] ⛔ Embedding üretimi ve gerçek vektörel benzerlik araması (OpenAI/Cohere) — API anahtarı ile
+- [x] ⛔→🟡 Embedding üretimi — `OPENAI_API_KEY` alındı, `scripts/backfill-embeddings.ts` (`npm run embeddings:backfill`) yazıldı ve test edildi. **Bloke:** OpenAI hesabında kota/billing yok (`insufficient_quota` hatası) — kullanıcı platform.openai.com/account/billing'den bakiye/ödeme yöntemi eklemeli. Eklendiğinde tek komutla (`npm run embeddings:backfill`) 5 olay için embedding üretilip `match_events` aktif olacak.
 - [ ] Cron/Edge Function ile periyodik olay yakalama (Supabase Edge Functions veya Vercel Cron)
 - [ ] Gerçekleşme takibi job'ı: T0+1s / T0+24s / T0+1h fiyatlarını otomatik çek ve `outcomes` tablosunu güncelle
 - [ ] Model güncelleme döngüsü: tahmin hatası (MAE) hesaplama ve zaman içi izleme
 - [ ] Genel Kullanıma Açık API (REST) + API key yönetimi
 - [ ] Webhook desteği (kurumsal müşteriler için)
 
+## Faz 6 — Üyelik, Admin Panel ve Paket Sistemi (Platform Katmanı)
+
+Kullanıcı talebi üzerine 2026-07-29'da eklendi: bir "platform" için üyelik/admin/paket
+sistemi olmadan bitmiş sayılamayacağı belirtildi. Faz 2'de "auth yüzeyi yok" diye
+ertelenen rumor durum geçişi de burada gerçek karşılığını buldu.
+
+- [x] Supabase Auth (e-posta/şifre) + oturum yönetimi — `src/proxy.ts` (Next.js 16'da `middleware.ts` → `proxy.ts`), her istekte token yeniler
+- [x] `profiles` tablosu (`role`: member/admin, `subscription_tier`: free/pro/kurumsal) — `0006_profiles_and_roles.sql`, `auth.users` insert'inde otomatik oluşturan trigger, `is_admin()` security-definer fonksiyonuyla özyinelemesiz RLS
+- [x] Giriş/Kayıt sayfaları (`/login`, `/signup`) — **uçtan uca canlı doğrulandı:** gerçek kullanıcı oluşturuldu, trigger ile `profiles` satırı otomatik oluştuğu doğrulandı, giriş yapıldı, header state'i doğru güncellendi, yanlış şifre/geçersiz e-posta/rate-limit hata mesajları doğru gösterildi
+- [x] Header'da auth durumu (`AuthNav`) — giriş yapılmamışsa "Giriş Yap", yapılmışsa e-posta + "Çıkış Yap" + (admin ise) "Admin" linki
+- [x] Admin paneli (`/admin`) — `role=admin` ile korumalı, **deny yolu canlıda doğrulandı** (member kullanıcı erişemiyor). Allow yolu (gerçek admin kullanıcıyla) kod incelemesiyle doğru ama otomatik test edilemedi — DB'ye rol yazan komut güvenlik sınıflandırıcısı tarafından bloklandı; kullanıcı kendi hesabını SQL Editor'de `update profiles set role='admin' where email='...'` ile admin yapıp test edebilir
+  - [x] İlk gerçek admin yeteneği: **rumor durum geçişi ekleme** (`src/app/admin/actions.ts`) — Faz 2'de ertelenen "auth/admin yüzeyi" burada çözüldü
+  - [ ] Kaynak yönetimi (sources CRUD) — yapılmadı
+  - [ ] Kullanıcı listesi / rol değiştirme UI'ı — yapılmadı, şu an rol değişikliği yalnızca doğrudan SQL ile
+- [x] Fiyatlandırma sayfası (`/pricing`) — Free/Pro/Kurumsal, Proje Dosyası Bölüm 2.3'teki hedef kitleye göre
+- [ ] ⛔ Stripe entegrasyonu (gerçek ödeme) — API anahtarı gerektirir. Şema (`profiles.subscription_tier`) ve UI hazır, **feature gating (paket seviyesine göre erişim kısıtlama) henüz uygulanmadı** — Free kullanıcı da şu an Pro özelliklerini görebiliyor, bu dürüstçe fiyatlandırma sayfasında belirtildi
+
+## ⭐ Showcase / Karşılama Sayfası (Öncelikli — kullanıcı talebi 2026-07-29)
+
+Şu an `/` doğrudan olay akışına (dashboard) düşüyor. Kullanıcı, siteye girildiğinde
+**mükemmel, detaylı, profesyonel, modern bir showcase/landing sayfası** karşılaması
+gerektiğini belirtti — müşteri önce bunu görüp kayıt olacak/giriş yapacak, dashboard'a
+sonra geçecek. **Henüz başlanmadı.** Kapsam önerisi (uygulanırken netleştirilecek):
+
+- [ ] Hero bölümü: değer önerisi, ürün ekran görüntüsü/demo
+- [ ] Gerçek hayat senaryolarından örnekler (Proje Dosyası Bölüm 4 — Tesla/Apple/Nvidia vb.) vitrin olarak
+- [ ] Özellik vitrini: Event Memory, Rumor Engine, Zincirleme Etki, canlı hesaplanan tahminler
+- [ ] Paketler (mevcut `/pricing` içeriğine link veya gömülü özet)
+- [ ] Net CTA: "Ücretsiz Kayıt Ol" → `/signup`
+- [ ] Giriş yapmış kullanıcı `/`'ye geldiğinde doğrudan dashboard'u görmeli (showcase yalnızca ziyaretçiler için) — routing mantığı ayrıca kurgulanacak
+- [ ] Mevcut olay akışı (dashboard), showcase'in arkasına taşınacak (örn. `/dashboard` veya girişten sonraki `/`)
+
 ## Sürekli / Yatay Konular
 
-- [ ] Kimlik doğrulama (Supabase Auth — e-posta + OAuth) — **bilinçli olarak ertelendi**: şu an auth gerektiren hiçbir özellik yok (izleme listesi, admin aksiyonları vb.), önce bir gerçek kullanım alanı doğmalı
-- [ ] Kullanıcı ayarları: izlenen varlıklar, bildirim tercihleri — auth'a bağımlı
+- [x] Kimlik doğrulama (Supabase Auth — e-posta + OAuth) — bkz. Faz 6, e-posta/şifre tamamlandı; OAuth (Google vb.) henüz yok
+- [ ] Kullanıcı ayarları: izlenen varlıklar, bildirim tercihleri — auth artık var ama bu özellik henüz yapılmadı
 - [x] Test altyapısı: birim testleri (Vitest) — `statUtils.ts`'teki gerçek hesaplama mantığı (`toLivePrediction`, `isNoiseFlagged`) için 11 test, hepsi geçiyor. Uçtan uca testler (Playwright) **henüz yok**.
-- [x] CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — her push/PR'da format kontrolü + lint + test + build; hiçbir secret gerektirmiyor (doğrulandı: `.env.local` olmadan build başarılı). Vercel zaten GitHub entegrasyonu üzerinden otomatik deploy ediyor.
+- [x] CI/CD: GitHub Actions (`.github/workflows/ci.yml`) — her push/PR'da format kontrolü + lint + test + build; hiçbir secret gerektirmiyor (doğrulandı: `.env.local` olmadan build başarılı). Vercel zaten GitHub entegrasyonu üzerinden otomatik deploy ediyor. **Bloke:** bu dosyayı push etmek için GitHub token'ının `workflow` scope'u gerekiyor, kullanıcının bir device-code onayı bekleniyor (bkz. "Şu An Neredeyiz").
 - [ ] Hata izleme (Sentry veya eşdeğeri) — ⛔ Sentry DSN/API anahtarı gerektirir
 - [ ] Performans: sayfa yükleme, veritabanı sorgu indeksleri (`pgvector` ANN indeksi zaten `0002`'de var, veri arttıkça `REINDEX` gerekebilir)
-- [ ] Erişilebilirlik (a11y) kontrolü
-- [ ] Yasal/uyumluluk metinleri: Kullanım Şartları, Gizlilik Politikası, "yatırım tavsiyesi değildir" feragatnamesi
+- [x] Erişilebilirlik (a11y) hızlı geçiş — skip-to-content linki, semantik landmark'lar (header/nav/main/footer), form label'ları, auth hata/bilgi mesajlarında `aria-live="polite"`. Kapsamlı bir a11y denetimi (axe/Lighthouse) **yapılmadı**.
+- [x] Yasal/uyumluluk metinleri: `/terms` ve `/privacy` sayfaları (Proje Dosyası Bölüm 10'a dayalı), footer'da linkli
 - [ ] Çoklu dil desteği (TR/EN) — opsiyonel
+- [x] Olay kartlarında canlı göreli süre ("5 dk önce") — `RelativeTime` bileşeni, 30 saniyede bir kendini güncelliyor, dashboard ve olay detay sayfasında
+- [x] Ek ücretsiz haber API anahtarları alındı ve `.env.local`/Vercel'e eklendi: GNews, The Guardian, Marketaux, Currents — **henüz hiçbiri kodda kullanılmıyor**, sadece yapılandırıldı (Faz 5'in haber akışı entegrasyonu adımını bekliyor)
 
 ---
 
 ## Şu An Neredeyiz?
 
-**Faz 0 tamamlandı.** **Faz 1 tamamlandı** — tahmin hesaplaması artık gerçek kod (kategori eşleşmesi, `compute_category_prediction`), yükleme/boş/hata durumları var, mobilde test edildi. Kalan tek gerçek boşluk: benzer olay araması hâlâ vektörel değil, kategori bazlı (embedding Faz 5'i bekliyor) — bu bilinçli bir ara adım, olay detay sayfasında açıkça etiketleniyor.
+**Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) büyük ölçüde tamamlandı** ve canlıda uçtan uca doğrulandı — gerçek kullanıcı kaydı, giriş, header state, admin deny yolu. **Faz 3 ve Faz 5'in çoğu** hâlâ başlanmadı (⛔ dış servisler). **Showcase/landing sayfası** kullanıcı tarafından öncelikli olarak istendi, henüz başlanmadı.
 
-**Faz 2** büyük ölçüde tamamlandı — kaynak doğruluk hesaplaması ve gürültü filtresi gerçek kod, tarayıcıda doğrulandı. Kalan tek parça (bilinçli olarak ertelendi): `rumor_tracking` durum geçişlerini tetikleyen bir yazma mekanizması — bunun için auth/admin yüzeyi gerekiyor. **Faz 4**'ün hesaplama kısmı da tamamlandı (zincirleme etki, ilişki tipine göre genelleştirilmiş kategori istatistiği). **Faz 3/5** büyük ölçüde başlanmadı; Faz 4'te yalnızca kullanıcı portföyü/izleme listesi kaldı.
+**API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı ve `.env.local` + Vercel'e eklendi. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Diğer 7 anahtar henüz hiçbir kodda kullanılmıyor — sadece yapılandırıldı.
 
-**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `0001`–`0005` migration'larının tümü uygulandı.
+**İki blokaj var, ikisi de kullanıcı aksiyonu bekliyor:**
 
-**Sıradaki en anlamlı iş — üç seçenek, kullanıcıya sorulmalı:**
+1. **GitHub `workflow` scope onayı** — `.github/workflows/ci.yml`'i push edebilmek için gerekli, device kodu: `493A-CA04` → [github.com/login/device](https://github.com/login/device). Bu onaylanana kadar **hiçbir commit push edilemiyor** (ci.yml içeren commit zincirin başında).
+2. **OpenAI billing** — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek.
 
-1. **Faz 3 (KAP/BIST)** — yerel piyasa entegrasyonu, ⛔ dış servis gerektirir
-2. **Faz 5'in ilk adımı** — gerçek embedding API'si bağlanıp `match_events`'i aktif etmek, ⛔ API anahtarı gerektirir
-3. **Sürekli konular** — auth, test altyapısı, CI/CD gibi ürünü "gerçek bir SaaS" yapan yatay işler, dış bağımlılık gerektirmez
-
-İlk ikisi API anahtarı istiyor; üçüncüsü şimdi başlanabilir.
+**Sıradaki en anlamlı iş:** Showcase/landing sayfası (kullanıcı önceliği) — ama önce yukarıdaki GitHub onayı gelmeli, yoksa yapılan işler push edilemeden birikmeye devam eder.
 
 ---
 
