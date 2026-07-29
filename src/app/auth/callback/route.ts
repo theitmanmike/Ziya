@@ -19,6 +19,9 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    console.error("OAuth code exchange failed:", error.status, error.message);
+  } else {
+    console.error("OAuth callback reached without a code param:", request.url);
   }
 
   return NextResponse.redirect(`${origin}/login?error=oauth`);
