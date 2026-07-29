@@ -101,20 +101,21 @@ ertelenen rumor durum geçişi de burada gerçek karşılığını buldu.
 - [x] Fiyatlandırma sayfası (`/pricing`) — Free/Pro/Kurumsal, Proje Dosyası Bölüm 2.3'teki hedef kitleye göre
 - [ ] ⛔ Stripe entegrasyonu (gerçek ödeme) — API anahtarı gerektirir. Şema (`profiles.subscription_tier`) ve UI hazır, **feature gating (paket seviyesine göre erişim kısıtlama) henüz uygulanmadı** — Free kullanıcı da şu an Pro özelliklerini görebiliyor, bu dürüstçe fiyatlandırma sayfasında belirtildi
 
-## ⭐ Showcase / Karşılama Sayfası (Öncelikli — kullanıcı talebi 2026-07-29)
+## ⭐ Showcase / Karşılama Sayfası — ✅ Tamamlandı (2026-07-29)
 
-Şu an `/` doğrudan olay akışına (dashboard) düşüyor. Kullanıcı, siteye girildiğinde
-**mükemmel, detaylı, profesyonel, modern bir showcase/landing sayfası** karşılaması
-gerektiğini belirtti — müşteri önce bunu görüp kayıt olacak/giriş yapacak, dashboard'a
-sonra geçecek. **Henüz başlanmadı.** Kapsam önerisi (uygulanırken netleştirilecek):
+`/` artık bir showcase/landing sayfası; olay akışı `/dashboard`'a taşındı. Tamamı
+tarayıcıda canlı doğrulandı (giriş yapmamış kullanıcı showcase görüyor, giriş yapmış
+kullanıcı `/`'ye gidince otomatik `/dashboard`'a yönleniyor, login/signup doğrudan
+`/dashboard`'a düşüyor).
 
-- [ ] Hero bölümü: değer önerisi, ürün ekran görüntüsü/demo
-- [ ] Gerçek hayat senaryolarından örnekler (Proje Dosyası Bölüm 4 — Tesla/Apple/Nvidia vb.) vitrin olarak
-- [ ] Özellik vitrini: Event Memory, Rumor Engine, Zincirleme Etki, canlı hesaplanan tahminler
-- [ ] Paketler (mevcut `/pricing` içeriğine link veya gömülü özet)
-- [ ] Net CTA: "Ücretsiz Kayıt Ol" → `/signup`
-- [ ] Giriş yapmış kullanıcı `/`'ye geldiğinde doğrudan dashboard'u görmeli (showcase yalnızca ziyaretçiler için) — routing mantığı ayrıca kurgulanacak
-- [ ] Mevcut olay akışı (dashboard), showcase'in arkasına taşınacak (örn. `/dashboard` veya girişten sonraki `/`)
+- [x] Hero bölümü: logo, değer önerisi başlığı, CTA'lar (`Ücretsiz Kayıt Ol`, `Olay Akışını İncele`)
+- [x] "Nasıl Çalışır" — 4 adımlı döngü (Proje Dosyası Bölüm 5/7'ye dayalı)
+- [x] Gerçek hayat senaryolarından örnekler — Tesla/Apple/Nvidia, **canlı veritabanından** (statik mockup değil, `getEvents()` ile gerçek `EventCard`'lar)
+- [x] Özellik vitrini: Event Memory, Rumor Engine, Zincirleme Etki, canlı hesaplanan tahmin
+- [x] Paketler özeti → `/pricing`'e link
+- [x] Net CTA: "Ücretsiz Kayıt Ol" → `/signup`
+- [x] Giriş yapmış kullanıcı `/`'ye geldiğinde `/dashboard`'a yönleniyor (`redirect()`, `getCurrentUser()` ile), showcase yalnızca ziyaretçiler için
+- [x] Olay akışı `/dashboard`'a taşındı; header'daki "Olay Akışı" linki güncellendi; login/signup sonrası yönlendirme de `/dashboard`'a düzeltildi
 
 ## Sürekli / Yatay Konular
 
@@ -134,16 +135,23 @@ sonra geçecek. **Henüz başlanmadı.** Kapsam önerisi (uygulanırken netleşt
 
 ## Şu An Neredeyiz?
 
-**Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) büyük ölçüde tamamlandı** ve canlıda uçtan uca doğrulandı — gerçek kullanıcı kaydı, giriş, header state, admin deny yolu. **Faz 3 ve Faz 5'in çoğu** hâlâ başlanmadı (⛔ dış servisler). **Showcase/landing sayfası** kullanıcı tarafından öncelikli olarak istendi, henüz başlanmadı.
+**Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) büyük ölçüde tamamlandı** ve canlıda uçtan uca doğrulandı. **Showcase/landing sayfası tamamlandı** ve doğrulandı. **Marka/logo** tasarlandı (bkz. aşağıdaki "Marka Kimliği" notu). **Faz 3 ve Faz 5'in çoğu** hâlâ başlanmadı (⛔ dış servisler).
 
 **API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı ve `.env.local` + Vercel'e eklendi. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Diğer 7 anahtar henüz hiçbir kodda kullanılmıyor — sadece yapılandırıldı.
 
-**İki blokaj var, ikisi de kullanıcı aksiyonu bekliyor:**
+**Tek blokaj:** OpenAI billing — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek. (GitHub `workflow` scope onaylandı, push'lar artık sorunsuz.)
 
-1. **GitHub `workflow` scope onayı** — `.github/workflows/ci.yml`'i push edebilmek için gerekli, device kodu: `493A-CA04` → [github.com/login/device](https://github.com/login/device). Bu onaylanana kadar **hiçbir commit push edilemiyor** (ci.yml içeren commit zincirin başında).
-2. **OpenAI billing** — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek.
+**Sıradaki en anlamlı iş:** README.md tamamlandıktan sonra — Faz 3 (KAP/BIST) ya da Faz 5 (gerçek veri) arasında kullanıcıya sorulmalı, ya da OpenAI billing eklenirse embedding/benzer olay araması tamamlanabilir.
 
-**Sıradaki en anlamlı iş:** Showcase/landing sayfası (kullanıcı önceliği) — ama önce yukarıdaki GitHub onayı gelmeli, yoksa yapılan işler push edilemeden birikmeye devam eder.
+---
+
+## Marka Kimliği
+
+**Logo** — `public/logo.svg` / `src/app/icon.svg` (favicon, isimsiz) / `src/components/Logo.tsx` (header lockup: ikon + "Ziya" yazısı). Konsept, kullanıcıyla 3 iterasyonda netleşti:
+
+1. İlk deneme (genel güneş/ışın ikonu) reddedildi — "Ziya ile alakası yok" geri bildirimi alındı
+2. "Mum grafiği" (candlestick chart) + alev — Türkçe'de "mum" hem kandil hem borsa mum grafiği anlamına geliyor
+3. **Final:** Şüpheci bir göz (kalkık kaş) + göz bebeğinde küçük bir mum. İki Türkçe deyimi birleştiriyor: **"Sallama Ziya"** (abartılı/inanılmaz iddialara karşı şüphecilik — tam olarak Rumor Engine'in işlevi) ve **"yalancının mumu yatsıya kadar yanar"** (Ziya'nın mumu sönmez — sürekli, güvenilir aydınlatma). Tüm elemanlar (kaş/göz/mum) gradyan, parıltı ve gölgeyle 3D/cilalı bir yüzey hissi taşıyor.
 
 ---
 

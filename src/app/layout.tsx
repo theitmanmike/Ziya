@@ -47,7 +47,7 @@ export default async function RootLayout({
               </span>
             </Link>
             <nav className="flex items-center gap-4 text-sm text-muted">
-              <Link href="/" className="hover:text-foreground">
+              <Link href="/dashboard" className="hover:text-foreground">
                 Olay Akışı
               </Link>
               <Link href="/pricing" className="hover:text-foreground">

@@ -28,7 +28,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         setError(error.message);
         return;
       }
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
       return;
     }
@@ -40,7 +40,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       return;
     }
     if (data.session) {
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
       return;
     }
