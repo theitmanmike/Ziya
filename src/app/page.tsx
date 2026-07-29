@@ -49,6 +49,20 @@ const STEPS = [
   },
 ];
 
+const AUDIENCE = [
+  { title: "Bireysel Yatırımcılar", need: "Haber akışını hızlı ve veriye dayalı yorumlama" },
+  { title: "Portföy Yöneticileri / Fon Ekipleri", need: "Olay bazlı risk ve fırsat taraması" },
+  { title: "Algoritmik Trading Ekipleri", need: "Yapılandırılmış olay-etki verisi (API)" },
+  { title: "Finansal Medya ve Araştırma", need: "Olay etki arşivi ve raporlama" },
+];
+
+const TRUST_TIERS = [
+  { source: "KAP / SEC", score: "100" },
+  { source: "Bloomberg / Reuters", score: "97–98" },
+  { source: "Doğrulanmış X Hesapları", score: "50–70" },
+  { source: "Reddit / Forumlar", score: "10–30" },
+];
+
 export default async function ShowcasePage() {
   const user = process.env.NEXT_PUBLIC_SUPABASE_URL ? await getCurrentUser() : null;
   if (user) {
@@ -98,28 +112,56 @@ export default async function ShowcasePage() {
               Olay Akışını İncele
             </Link>
           </div>
+          <p className="mt-4 text-xs text-muted">
+            Kredi kartı gerekmez · Karar destek aracıdır, yatırım tavsiyesi değildir
+          </p>
+        </div>
+      </section>
+
+      {/* Neden Ziya — problem/çözüm */}
+      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+        <h2 className="text-center text-2xl font-semibold tracking-tight">Neden Ziya?</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-sm text-muted sm:text-base">
+          Yatırımcılar fiyat grafiklerine, hacimlere ve teknik indikatörlere saniyeler içinde
+          ulaşabiliyor. Ama piyasaya düşen yeni bir haberin fiyatı{" "}
+          <strong className="text-foreground">%0,4 mü yoksa %15 mi</strong> etkileyeceği sorusu hâlâ
+          cevapsız. Ziya, &quot;bu haber gerçekten önemli mi, geçmişte benzer durumlarda piyasa
+          nasıl tepki verdi?&quot; sorusunu saniyeler içinde, verilerle yanıtlar.
+        </p>
+        <div className="mx-auto mt-8 max-w-md rounded-xl border border-border bg-surface p-5">
+          <p className="text-xs font-medium text-muted">Kaynak Güven Hiyerarşisi</p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {TRUST_TIERS.map((tier) => (
+              <li key={tier.source} className="flex items-center justify-between">
+                <span>{tier.source}</span>
+                <span className="font-mono font-semibold tabular-nums">{tier.score}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       {/* Nasıl Çalışır */}
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
-        <h2 className="text-center text-2xl font-semibold tracking-tight">Nasıl Çalışır</h2>
-        <div className="mt-10 grid gap-6 sm:grid-cols-4">
-          {STEPS.map((step, i) => (
-            <div key={step.title} className="text-center">
-              <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
-                {i + 1}
+      <section className="border-t border-border bg-surface">
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+          <h2 className="text-center text-2xl font-semibold tracking-tight">Nasıl Çalışır</h2>
+          <div className="mt-10 grid gap-6 sm:grid-cols-4">
+            {STEPS.map((step, i) => (
+              <div key={step.title} className="text-center">
+                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
+                  {i + 1}
+                </div>
+                <h3 className="mt-3 text-sm font-semibold">{step.title}</h3>
+                <p className="mt-1 text-xs text-muted">{step.description}</p>
               </div>
-              <h3 className="mt-3 text-sm font-semibold">{step.title}</h3>
-              <p className="mt-1 text-xs text-muted">{step.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Gerçek senaryo vitrini */}
       {featuredEvents.length > 0 && (
-        <section className="border-y border-border bg-surface">
+        <section className="border-b border-border">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <div className="text-center">
               <h2 className="text-2xl font-semibold tracking-tight">
@@ -153,8 +195,26 @@ export default async function ShowcasePage() {
         </div>
       </section>
 
+      {/* Hedef Kitle */}
+      <section className="border-y border-border bg-surface">
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+          <h2 className="text-center text-2xl font-semibold tracking-tight">Kimler İçin?</h2>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2">
+            {AUDIENCE.map((segment) => (
+              <div
+                key={segment.title}
+                className="rounded-xl border border-border bg-background p-5"
+              >
+                <h3 className="font-semibold">{segment.title}</h3>
+                <p className="mt-2 text-sm text-muted">{segment.need}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Paketler özeti */}
-      <section className="border-t border-border bg-surface">
+      <section>
         <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
           <h2 className="text-2xl font-semibold tracking-tight">
             Bireysel Yatırımcıdan Kurumsal Ekiplere
@@ -172,17 +232,19 @@ export default async function ShowcasePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Bugün başlayın</h2>
-        <p className="mt-2 text-sm text-muted">
-          Kredi kartı gerekmez. Bir dakikada hesap oluşturun, olay akışını hemen görün.
-        </p>
-        <Link
-          href="/signup"
-          className="mt-6 inline-block rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground hover:opacity-90"
-        >
-          Ücretsiz Kayıt Ol
-        </Link>
+      <section className="border-t border-border bg-surface">
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
+          <h2 className="text-2xl font-semibold tracking-tight">Bugün başlayın</h2>
+          <p className="mt-2 text-sm text-muted">
+            Kredi kartı gerekmez. Bir dakikada hesap oluşturun, olay akışını hemen görün.
+          </p>
+          <Link
+            href="/signup"
+            className="mt-6 inline-block rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-brand-foreground hover:opacity-90"
+          >
+            Ücretsiz Kayıt Ol
+          </Link>
+        </div>
       </section>
     </div>
   );
