@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f8fa;
+  --foreground: #14171f;
+  --surface: #ffffff;
+  --surface-hover: #f1f2f5;
+  --border: #e3e5ea;
+  --muted: #63697b;
+
+  --brand: #4338ca;
+  --brand-foreground: #ffffff;
+
+  --positive: #16803c;
+  --positive-bg: #ecfdf3;
+  --negative: #b91c1c;
+  --negative-bg: #fef2f2;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --info: #1d4ed8;
+  --info-bg: #eff6ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+
+  --color-positive: var(--positive);
+  --color-positive-bg: var(--positive-bg);
+  --color-negative: var(--negative);
+  --color-negative-bg: var(--negative-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b0c10;
+    --foreground: #edeef2;
+    --surface: #15161d;
+    --surface-hover: #1c1e27;
+    --border: #262835;
+    --muted: #8b8fa3;
+
+    --brand: #818cf8;
+    --brand-foreground: #0b0c10;
+
+    --positive: #4ade80;
+    --positive-bg: rgba(74, 222, 128, 0.12);
+    --negative: #f87171;
+    --negative-bg: rgba(248, 113, 113, 0.12);
+    --warning: #fbbf24;
+    --warning-bg: rgba(251, 191, 36, 0.12);
+    --info: #60a5fa;
+    --info-bg: rgba(96, 165, 250, 0.12);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+* {
+  border-color: var(--border);
+}
