@@ -124,14 +124,14 @@ sistemi **gerçekten yöneten** bir admin paneli istediğini belirtti: akış ay
 API adresleri, haber kanalları, müşteriler, paketler. Ayrıca müşteri girişinde de
 benzer kalitede bir panel istendi.
 
-- [ ] Ortak admin layout (`/admin/layout.tsx`) — auth+rol kontrolü tek yerde, sol nav (Genel Bakış/Kaynaklar/Müşteriler/Paketler/Entegrasyonlar)
-- [ ] **Kaynaklar (haber kanalları)** — `/admin/sources`: ekle/düzenle/sil, `trust_score` yönetimi. Bu tablo zaten `compute_source_accuracy` ve gürültü filtresinin girdisi — gerçek etkisi var.
-- [ ] **Müşteriler** — `/admin/customers`: tüm `profiles` listesi (RLS zaten `is_admin()` ile admin'e tüm satırları açıyor), rol (member/admin) ve paket seviyesi (free/pro/kurumsal) değiştirme.
-- [ ] **Paketler** — `/admin/pricing`: `pricing_tiers` + `pricing_tier_features` tabloları (yeni migration), admin'den düzenlenebilir. `/pricing` sayfası artık DB'den okuyor (statik dizi değil).
-- [ ] **Entegrasyon Durumu** — `/admin/integrations`: hangi API anahtarlarının (OpenAI/Finnhub/Alpha Vantage/NewsAPI/GNews/Guardian/Marketaux/Currents) ortamda tanımlı olduğunu gösteren **salt okunur** durum sayfası.
-- [ ] **"API adresleri" — bilinçli olarak sınırlı tutuldu.** Gerçek API anahtarları asla veritabanına/admin panelinden düzenlenebilir bir alana taşınmamalı (env var'lar zaten doğru yer — sızıntı riski). Admin panelinde sadece _durum_ gösteriliyor, anahtarların kendisi değil. Anahtarları değiştirmek isteyen kullanıcı `.env.local` + Vercel env değişkenlerini güncellemeli.
-- [ ] **"Akış ayarları" — kapsamı netleştirilmedi.** Şu an gerçek bir ingestion pipeline (Faz 5) olmadığı için "akış ayarı" (örn. sayfa başına olay sayısı, otomatik güncelleme sıklığı) gibi ayarların gerçek bir karşılığı yok — spekülatif bir ayarlar sayfası kurmak yerine, Faz 5'in ilk gerçek entegrasyonu yazılınca birlikte ele alınacak.
-- [ ] **Müşteri Paneli** — `/account`: profil bilgisi (e-posta, kayıt tarihi), paket seviyesi rozeti, ad-soyad düzenleme (kendi profilini güncelleyen tek self-service alan — `role`/`subscription_tier` kasıtlı olarak kullanıcıya kapalı, yalnızca admin değiştirebilir).
+- [x] Ortak admin layout (`/admin/layout.tsx`) — auth+rol kontrolü tek yerde, sol nav (Genel Bakış/Kaynaklar/Müşteriler/Paketler/Entegrasyonlar) — canlıda doğrulandı
+- [x] **Kaynaklar (haber kanalları)** — `/admin/sources`: ekle/düzenle/sil, `trust_score` yönetimi. **Uçtan uca canlıda doğrulandı**: yeni kaynak eklendi (DB'de doğrulandı), silindi (DB'de doğrulandı). Bu tablo zaten `compute_source_accuracy` ve gürültü filtresinin girdisi — gerçek etkisi var.
+- [x] **Müşteriler** — `/admin/customers`: tüm `profiles` listesi (RLS zaten `is_admin()` ile admin'e tüm satırları açıyor), rol (member/admin) ve paket seviyesi (free/pro/kurumsal) değiştirme. Canlıda 3 gerçek kullanıcıyla doğrulandı.
+- [x] **Paketler** — `/admin/pricing`: `pricing_tiers` + `pricing_tier_features` tabloları (`0007_pricing_tiers.sql`), admin'den düzenlenebilir. `/pricing` sayfası artık DB'den okuyor (statik dizi değil) — canlıda doğrulandı.
+- [x] **Entegrasyon Durumu** — `/admin/integrations`: 8 API anahtarının ortamda tanımlı olup olmadığını gösteren **salt okunur** durum sayfası — canlıda doğrulandı (hepsi "Yapılandırılmış").
+- [x] **Müşteri Paneli** — `/account`: profil bilgisi (e-posta, kayıt tarihi), paket seviyesi rozeti, ad-soyad düzenleme (kendi profilini güncelleyen tek self-service alan — `role`/`subscription_tier` kasıtlı olarak kullanıcıya kapalı, yalnızca admin değiştirebilir). Canlıda doğrulandı.
+- [x] **"API adresleri" konusu netleşti:** Gerçek API anahtarları asla veritabanına/admin panelinden düzenlenebilir bir alana taşınmadı (env var'lar doğru yer — sızıntı riski). Admin panelinde sadece _durum_ gösteriliyor.
+- [~] **"Akış ayarları" / gerçek haber çekme** — kullanıcı bunu ayrıca netleştirdi: sistem gerçekten haber çekmeli. Bkz. aşağıdaki **Faz 7.1 — Gerçek Haber Çekme (Ingestion)** bölümü.
 
 ## Sürekli / Yatay Konular
 

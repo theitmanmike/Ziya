@@ -1,27 +1,10 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { STATUS_LABELS } from "@/lib/format";
 import { addRumorStage } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
-        <h1 className="text-xl font-semibold">Yetkiniz yok</h1>
-        <p className="mt-2 text-sm text-muted">Bu sayfa yalnızca admin kullanıcılar içindir.</p>
-      </div>
-    );
-  }
-
+export default async function AdminOverviewPage() {
   const supabase = await createClient();
   const { data: events } = await supabase
     .from("events")
@@ -29,11 +12,8 @@ export default async function AdminPage() {
     .order("occurred_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Admin Paneli</h1>
-      <p className="mt-1 text-sm text-muted">Giriş: {user.email}</p>
-
-      <section className="mt-8">
+    <div>
+      <section>
         <h2 className="text-lg font-semibold">Söylenti Durumu Ekle</h2>
         <p className="mt-1 text-sm text-muted">
           Bir olaya yeni bir söylenti yaşam döngüsü aşaması (rumor_tracking) ekler.

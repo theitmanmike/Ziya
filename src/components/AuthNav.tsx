@@ -29,6 +29,9 @@ export function AuthNav({ email, isAdmin }: { email: string | null; isAdmin: boo
           Admin
         </Link>
       )}
+      <Link href="/account" className="hover:text-foreground">
+        Hesabım
+      </Link>
       <span className="hidden text-xs sm:inline">{email}</span>
       <button type="button" onClick={handleLogout} className="hover:text-foreground">
         Çıkış Yap

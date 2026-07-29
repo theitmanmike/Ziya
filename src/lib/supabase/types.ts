@@ -98,6 +98,28 @@ export interface RumorTracking {
   updated_at: string;
 }
 
+export interface PricingTier {
+  id: string;
+  name: string;
+  audience: string;
+  price_label: string;
+  cta_label: string;
+  cta_href: string;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export interface PricingTierFeature {
+  id: string;
+  tier_id: string;
+  feature: string;
+  sort_order: number;
+}
+
+export interface PricingTierWithFeatures extends PricingTier {
+  features: PricingTierFeature[];
+}
+
 /** Dashboard/detay sayfalarında kullanılan, ilişkileri açılmış olay görünümü. */
 export interface EventWithRelations extends EventRow {
   source: Source;
