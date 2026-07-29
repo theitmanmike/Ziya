@@ -11,6 +11,8 @@ import { formatDateTime, RELATION_LABELS } from "@/lib/format";
 import { getEventByCode } from "@/lib/events";
 import { computeLivePredictions } from "@/lib/predictions";
 import { computeSourceAccuracy } from "@/lib/sources";
+import { computeChainEffect } from "@/lib/chainEffect";
+import type { LivePrediction } from "@/lib/statUtils";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +27,18 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
   const assetIds = [...new Set(event.assets.map((a) => a.asset.id))];
   const livePredictions = await computeLivePredictions(event.category, event.id);
   const sourceAccuracy = await computeSourceAccuracy(event.source.id);
+
+  const chainEffects = new Map<string, LivePrediction[]>();
+  await Promise.all(
+    event.assets
+      .filter((a) => a.relation !== "birincil")
+      .map(async (a) => {
+        chainEffects.set(
+          a.asset.id,
+          await computeChainEffect(event.category, a.relation, event.id)
+        );
+      })
+  );
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -98,13 +112,25 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
                 </div>
               )}
 
-              {link.relation === "birincil" && (
+              {link.relation === "birincil" ? (
                 <div className="mt-4">
                   <p className="mb-2 text-xs font-medium text-muted">
                     Canlı Hesaplanan Tahmin (aynı kategorideki olayların ortalaması)
                   </p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {livePredictions.map((prediction) => (
+                      <LivePredictionPanel key={prediction.horizon} prediction={prediction} />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <p className="mb-2 text-xs font-medium text-muted">
+                    Zincirleme Etki Tahmini ({RELATION_LABELS[link.relation] ?? link.relation}{" "}
+                    konumundaki varlıkların aynı kategorideki geçmiş ortalaması)
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(chainEffects.get(assetId) ?? []).map((prediction) => (
                       <LivePredictionPanel key={prediction.horizon} prediction={prediction} />
                     ))}
                   </div>
@@ -118,12 +144,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ co
       <section className="mt-8 rounded-xl border border-dashed border-border p-4 text-sm text-muted">
         <p>
           <strong className="text-foreground">Benzer Olay Arama:</strong> Canlı hesaplanan tahminler
-          şu an yalnızca <strong className="text-foreground">kategori eşleşmesine</strong> dayanıyor
-          (bkz. <code>compute_category_prediction</code>,{" "}
-          <code>supabase/migrations/0003_prediction_engine.sql</code>). Gerçek vektörel benzerlik
-          araması, embedding üretimi Faz 5&apos;te bir embedding API&apos;siyle bağlandığında bunun
-          yerini alacak (bkz. <code>match_events</code>,{" "}
-          <code>supabase/migrations/0002_similarity_search.sql</code>).
+          (birincil varlık ve zincirleme etki) şu an yalnızca{" "}
+          <strong className="text-foreground">kategori eşleşmesine</strong> dayanıyor (bkz.{" "}
+          <code>compute_category_prediction</code> ve{" "}
+          <code>compute_category_relation_prediction</code>,{" "}
+          <code>supabase/migrations/0003_prediction_engine.sql</code> ve{" "}
+          <code>0005_chain_effect.sql</code>). Gerçek vektörel benzerlik araması, embedding üretimi
+          Faz 5&apos;te bir embedding API&apos;siyle bağlandığında bunun yerini alacak (bkz.{" "}
+          <code>match_events</code>, <code>supabase/migrations/0002_similarity_search.sql</code>).
         </p>
       </section>
 

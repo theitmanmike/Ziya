@@ -70,7 +70,7 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 ## Faz 4 — Zincirleme Etki ve Portföy Perspektifi
 
 - [x] `event_assets` ilişki tablosu (`birincil`/`rakip`/`tedarikci`/`sektor_paydasi`) — planlanan `related_assets` yerine olay bazlı ilişki olarak modellendi
-- [ ] Zincirleme etki **hesaplama** — görselleştirme var (Nvidia senaryosu, olay detay sayfasında NVDA/TSM/AMD/SMCI tablosu canlı veriyle doğrulandı), ama hesaplayan bir algoritma yok, veriler statik seed
+- [x] Zincirleme etki **hesaplama** — `compute_category_relation_prediction` (Postgres, `0005_chain_effect.sql`) + `src/lib/chainEffect.ts`, `compute_category_prediction`'ın ilişki tipine (rakip/tedarikçi/sektör paydaşı) göre genelleştirilmiş hali. Ortak istatistik/güven formülü `src/lib/statUtils.ts`'e çıkarıldı (predictions.ts ile paylaşılıyor). Nvidia senaryosunda TSM ("Tedarikçi") ve AMD ("Rakip") için tarayıcıda doğrulandı — her ikisi de doğru şekilde "0 örnek" gösteriyor (bu ilişki tipleri Event Memory'de henüz tek örnekli).
 - [ ] Kullanıcı portföyü (izleme listesi) ve portföye özel bildirim filtresi — **yapılmadı**
 
 ## Faz 5 — Gerçek Veri Entegrasyonu ve Kurumsal API
@@ -102,11 +102,17 @@ Hedef: Gerçek API'ler bağlanmadan önce, **Proje Dosyası'ndaki 5 senaryonun**
 
 **Faz 0 tamamlandı.** **Faz 1 tamamlandı** — tahmin hesaplaması artık gerçek kod (kategori eşleşmesi, `compute_category_prediction`), yükleme/boş/hata durumları var, mobilde test edildi. Kalan tek gerçek boşluk: benzer olay araması hâlâ vektörel değil, kategori bazlı (embedding Faz 5'i bekliyor) — bu bilinçli bir ara adım, olay detay sayfasında açıkça etiketleniyor.
 
-**Faz 2** artık büyük ölçüde tamamlandı — kaynak doğruluk hesaplaması ve gürültü filtresi gerçek kod, tarayıcıda doğrulandı. Kalan tek parça (bilinçli olarak ertelendi): `rumor_tracking` durum geçişlerini tetikleyen bir yazma mekanizması — bunun için auth/admin yüzeyi gerekiyor. **Faz 3/5** büyük ölçüde başlanmadı; **Faz 4**'te sadece statik görselleştirme var, hesaplama yok.
+**Faz 2** büyük ölçüde tamamlandı — kaynak doğruluk hesaplaması ve gürültü filtresi gerçek kod, tarayıcıda doğrulandı. Kalan tek parça (bilinçli olarak ertelendi): `rumor_tracking` durum geçişlerini tetikleyen bir yazma mekanizması — bunun için auth/admin yüzeyi gerekiyor. **Faz 4**'ün hesaplama kısmı da tamamlandı (zincirleme etki, ilişki tipine göre genelleştirilmiş kategori istatistiği). **Faz 3/5** büyük ölçüde başlanmadı; Faz 4'te yalnızca kullanıcı portföyü/izleme listesi kaldı.
 
-**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `compute_category_prediction` ve `compute_source_accuracy` migration'ları uygulandı.
+**Canlı durum:** https://ziya.cicibyte.com — gerçek Supabase verisiyle çalışıyor, GitHub'a push edildi, Vercel env değişkenleri ayarlı, `0001`–`0005` migration'larının tümü uygulandı.
 
-**Sıradaki en anlamlı iş:** Faz 4 — zincirleme etki hesaplaması (aynı istatistiksel desenin `event_assets.relation` üzerinden genişletilmesi: rakip/tedarikçi/sektör paydaşının geçmişte benzer olaylarda ortalama nasıl tepki verdiğini hesaplamak).
+**Sıradaki en anlamlı iş — üç seçenek, kullanıcıya sorulmalı:**
+
+1. **Faz 3 (KAP/BIST)** — yerel piyasa entegrasyonu, ⛔ dış servis gerektirir
+2. **Faz 5'in ilk adımı** — gerçek embedding API'si bağlanıp `match_events`'i aktif etmek, ⛔ API anahtarı gerektirir
+3. **Sürekli konular** — auth, test altyapısı, CI/CD gibi ürünü "gerçek bir SaaS" yapan yatay işler, dış bağımlılık gerektirmez
+
+İlk ikisi API anahtarı istiyor; üçüncüsü şimdi başlanabilir.
 
 ---
 
