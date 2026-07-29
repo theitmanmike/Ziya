@@ -1,7 +1,8 @@
 import "server-only";
 import { resolveApiKey } from "@/lib/secrets";
+import type { NormalizedArticle } from "./types";
 
-export interface FinnhubArticle {
+interface FinnhubArticle {
   category: string;
   datetime: number; // unix seconds
   headline: string;
@@ -17,7 +18,7 @@ export async function fetchFinnhubCompanyNews(
   ticker: string,
   fromDate: string,
   toDate: string
-): Promise<FinnhubArticle[]> {
+): Promise<NormalizedArticle[]> {
   const apiKey = await resolveApiKey("FINNHUB_API_KEY");
   if (!apiKey) {
     throw new Error("FINNHUB_API_KEY tanımlı değil.");
@@ -31,5 +32,14 @@ export async function fetchFinnhubCompanyNews(
   }
 
   const json = (await res.json()) as unknown;
-  return Array.isArray(json) ? (json as FinnhubArticle[]) : [];
+  const articles = Array.isArray(json) ? (json as FinnhubArticle[]) : [];
+
+  return articles.map((article) => ({
+    externalId: String(article.id),
+    headline: article.headline,
+    summary: article.summary || null,
+    url: article.url,
+    sourceName: article.source || "Finnhub",
+    occurredAt: new Date(article.datetime * 1000).toISOString(),
+  }));
 }

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { runFinnhubIngestion } from "@/lib/ingestion/runFinnhubIngestion";
+import { runAllIngestions } from "@/lib/ingestion/runAllIngestions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await runFinnhubIngestion("cron");
-    return NextResponse.json({ ok: true, ...result });
+    const results = await runAllIngestions("cron");
+    return NextResponse.json({ ok: true, results });
   } catch (err) {
     return NextResponse.json(
       { ok: false, error: err instanceof Error ? err.message : String(err) },

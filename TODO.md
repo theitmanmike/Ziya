@@ -151,6 +151,23 @@ veritabanında saklanabiliyor.
 - [x] **Uçtan uca canlı test (2026-07-29):** Panelden "Şimdi Çek" tetiklendi → DB'de gerçek `ingestion_runs` kaydı (`30 görülen / 29 oluşturulan`, durum `success`) → dashboard'da gerçek, güncel haberler göründü (NVDA/AMD/AAPL/TSLA, Yahoo kaynaklı, doğru göreli zaman damgalı). DB'ye kaydedilmiş Finnhub anahtarının gerçekten kullanıldığı, env değişkenini geçersiz kılarak doğrulandı.
 - [x] `SECRETS_ENCRYPTION_KEY` Vercel'in üç ortamına da (`production`/`preview`/`development`) eklendi.
 
+### Faz 7.1'in devamı — Diğer 4 Haber Kaynağı (kullanıcı talebi 2026-07-29, devam)
+
+Finnhub tek başına yeterli çeşitlilik sağlamıyordu; kullanıcı kalan 4 anahtarın
+(GNews, Guardian, Marketaux, Currents) da gerçekten kullanılmasını istedi.
+Ortak insert/dedup mantığı `runFinnhubIngestion`'dan çıkarılıp paylaşılan bir
+çekirdeğe taşındı, böylece her yeni kaynak yalnızca kendi fetch+normalize
+fonksiyonunu yazıyor.
+
+- [x] **Paylaşılan çekirdek** — `src/lib/ingestion/types.ts` (`NormalizedArticle`), `ingestArticles.ts` (kaynak/olay/event_assets insert + dedup), `runIngestionConnector.ts` (ingestion_runs kaydı açma/kapama + varlık döngüsü). `runFinnhubIngestion` bu çekirdeği kullanacak şekilde yeniden yazıldı (davranış aynı: 3 günlük lookback, varlık başına 5 makale).
+- [x] **GNews** (`gnews.ts`) — şirket adıyla arar (ticker değil). **Bulunan gerçek hata:** GNews'ün arama sözdizimi virgül/nokta gibi noktalama işaretlerine `syntax error` ile tepki veriyor — "Tesla, Inc." ham haliyle 0 sonuç değil, doğrudan hata döndürüyordu. `toSearchQuery()` ile yalnızca harf/rakam/boşluk bırakılarak temizlendi; düzeltme sonrası canlıda doğrulandı (25 görülen / 24 oluşturulan).
+- [x] **The Guardian** (`guardian.ts`) — şirket adıyla arar, makalenin kendi `id` alanı (URL slug'ı) `event_code` için kullanılıyor. Canlıda doğrulandı (30 görülen / 23 oluşturulan).
+- [x] **Marketaux** (`marketaux.ts`) — ticker sembolüyle arar (finans odaklı API, GNews/Guardian/Currents'ın aksine ticker'ı doğrudan destekliyor). Canlıda doğrulandı (21 görülen / 21 oluşturulan). **Bilinen kısıt:** ücretsiz plan ayda yalnızca 100 istek veriyor — günlük cron'da (varlık başına 1 istek × 8 varlık = günde 8 istek) ay ortasında tükenebilir; bu proje şu an demo ölçeğinde olduğu için kabul edildi, gerçek üretimde ya ücretli plana geçilmeli ya da çağrı sıklığı azaltılmalı.
+- [x] **Currents** (`currents.ts`) — şirket adıyla arar. Canlıda doğrulandı (30 görülen / 30 oluşturulan).
+- [x] **`runAllIngestions`** — 5 bağlayıcıyı sırayla çalıştırır; biri hata verirse (eksik anahtar, kota, sözdizimi hatası vb.) diğerlerini durdurmaz, her biri kendi `ingestion_runs` kaydını tutar. Hem `/api/cron/ingest-news` hem admin panelindeki "Şimdi Çek" artık bunu çağırıyor.
+- [x] **Admin `/admin/ingestion`** — çalıştırma tablosuna "Kaynak" (connector) sütunu eklendi, açıklama metni 5 bağlayıcıyı yansıtacak şekilde güncellendi.
+- [~] **Dürüst bir gözlem:** Guardian ve Currents gibi genel haber API'leri şirket adıyla anahtar kelime araması yaptığı için bazen alakasız sonuçlar getiriyor (örn. "Super Micro Computer" araması bir maraton haberiyle eşleşti, çünkü tam metin arama gevşek). Bu, otomatik çekilen kaynakların `trust_score`'unun 55 (orta-düşük) ile başlamasının ve gürültü filtresinin (`isNoiseFlagged`) tam olarak var olma sebebidir — sistem bunu gizlemiyor, dürüstçe düşük güvenilirlikle işaretliyor. Daha akıllı bir alaka/filtreleme katmanı (embedding tabanlı benzerlik veya anahtar kelime kesişimi) gelecekte eklenebilir, şu an kapsamda değil.
+
 ## Sürekli / Yatay Konular
 
 - [x] Kimlik doğrulama (Supabase Auth — e-posta + OAuth) — bkz. Faz 6, e-posta/şifre tamamlandı; OAuth (Google vb.) henüz yok
@@ -171,11 +188,11 @@ veritabanında saklanabiliyor.
 
 **Faz 0, 1, 2 (motor kısmı), 4 (hesaplama kısmı) tamamlandı.** **Faz 6 (Üyelik/Admin/Paket) tamamlandı** ve canlıda uçtan uca doğrulandı. **Faz 7 ve Faz 7.1 (profesyonel admin paneli + gerçek haber çekme + admin'den yönetilebilir şifreli API anahtarları) tamamlandı** ve canlıda uçtan uca doğrulandı. **Showcase/landing sayfası tamamlandı** ve doğrulandı. **Marka/logo** tasarlandı (bkz. aşağıdaki "Marka Kimliği" notu). **Faz 3 ve Faz 5'in embedding/benzer-olay-arama kısmı** hâlâ bekliyor (⛔ OpenAI billing).
 
-**API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı; hem `.env.local`/Vercel'de hem de admin panelinden (`/admin/settings`) veritabanına şifreli olarak kaydedilebiliyor (`resolveApiKey()` önce DB'ye bakar, yoksa env'e düşer). Finnhub gerçek haber çekmede aktif olarak kullanılıyor. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Diğer 6 anahtar (Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents) henüz hiçbir kodda kullanılmıyor — yalnızca yapılandırıldı ve panelden düzenlenebilir durumda.
+**API anahtarları:** OpenAI, Finnhub, Alpha Vantage, NewsAPI, GNews, Guardian, Marketaux, Currents — hepsi alındı; hem `.env.local`/Vercel'de hem de admin panelinden (`/admin/settings`) veritabanına şifreli olarak kaydedilebiliyor (`resolveApiKey()` önce DB'ye bakar, yoksa env'e düşer). **Finnhub, GNews, Guardian, Marketaux, Currents — beşi de gerçek haber çekmede aktif** ve canlıda doğrulandı. Embedding backfill scripti (`npm run embeddings:backfill`) yazıldı ama **OpenAI hesabında billing/kota olmadığı için çalışmıyor** (`insufficient_quota`). Alpha Vantage ve NewsAPI henüz hiçbir kodda kullanılmıyor — yalnızca yapılandırıldı ve panelden düzenlenebilir durumda.
 
 **Tek blokaj:** OpenAI billing — platform.openai.com/account/billing'den ödeme yöntemi eklenmeli, sonra `npm run embeddings:backfill` çalıştırılıp `match_events` aktif edilecek.
 
-**Sıradaki en anlamlı iş:** Faz 3 (KAP/BIST) ya da Faz 5'in geri kalan haber kaynaklarının (GNews/Guardian/Marketaux/Currents) ingestion'a eklenmesi arasında kullanıcıya sorulmalı, ya da OpenAI billing eklenirse embedding/benzer olay araması tamamlanabilir.
+**Sıradaki en anlamlı iş:** Faz 3 (KAP/BIST) ya da OpenAI billing eklenirse embedding/benzer olay araması tamamlanabilir — kullanıcıya sorulmalı.
 
 ---
 

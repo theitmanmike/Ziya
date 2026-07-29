@@ -31,10 +31,16 @@ export default async function AdminIngestionPage() {
     <div>
       <h2 className="text-lg font-semibold">Haber Çekme (Ingestion)</h2>
       <p className="mt-1 text-sm text-muted">
-        Finnhub&apos;dan (<code>FINNHUB_API_KEY</code>) izlenen hisseler için gerçek haber çeker.
-        Kategori/duygu sınıflandırması yapılmaz — her yeni olay <code>Genel Haber</code> kategorisi
-        ve <code>Doğrulanmamış</code> durumuyla eklenir; kaynak, makalenin kendi kaynağıdır (yoksa
-        otomatik oluşturulur, güven skoru 55 ile başlar — Kaynaklar sayfasından ayarlayabilirsiniz).
+        5 bağlayıcıdan (Finnhub, GNews, The Guardian, Marketaux, Currents) izlenen hisseler için
+        gerçek haber çeker. Her bağlayıcı kendi çalıştırma kaydını tutar — biri hata verirse (eksik
+        anahtar, kota) diğerleri etkilenmez. Kategori/duygu sınıflandırması yapılmaz — her yeni olay{" "}
+        <code>Genel Haber</code> kategorisi ve <code>Doğrulanmamış</code> durumuyla eklenir; kaynak,
+        makalenin kendi kaynağıdır (yoksa otomatik oluşturulur, güven skoru 55 ile başlar —
+        Kaynaklar sayfasından ayarlayabilirsiniz). API anahtarları{" "}
+        <a href="/admin/settings" className="text-brand hover:underline">
+          Ayarlar
+        </a>{" "}
+        sayfasından yönetilir.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
@@ -56,10 +62,11 @@ export default async function AdminIngestionPage() {
       </form>
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-border">
-        <table className="w-full min-w-[560px] text-left text-sm">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-surface-hover text-xs uppercase tracking-wide text-muted">
             <tr>
               <th className="px-3 py-2 font-medium">Başladı</th>
+              <th className="px-3 py-2 font-medium">Kaynak</th>
               <th className="px-3 py-2 font-medium">Tetikleyici</th>
               <th className="px-3 py-2 font-medium">Durum</th>
               <th className="px-3 py-2 font-medium">Görülen / Oluşturulan</th>
@@ -70,6 +77,7 @@ export default async function AdminIngestionPage() {
             {(runs ?? []).map((run) => (
               <tr key={run.id}>
                 <td className="px-3 py-2">{formatDateTime(run.started_at)}</td>
+                <td className="px-3 py-2 font-mono text-xs">{run.connector}</td>
                 <td className="px-3 py-2 text-muted">
                   {run.trigger === "manual" ? "Manuel" : "Zamanlanmış"}
                 </td>

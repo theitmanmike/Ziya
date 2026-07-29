@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
-import { runFinnhubIngestion } from "@/lib/ingestion/runFinnhubIngestion";
+import { runAllIngestions } from "@/lib/ingestion/runAllIngestions";
 
 export async function triggerIngestion() {
   const user = await getCurrentUser();
@@ -10,7 +10,7 @@ export async function triggerIngestion() {
     throw new Error("Bu işlem için admin yetkisi gerekir.");
   }
 
-  await runFinnhubIngestion("manual");
+  await runAllIngestions("manual");
 
   revalidatePath("/admin/ingestion");
   revalidatePath("/dashboard");
